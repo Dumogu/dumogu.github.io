@@ -1,0 +1,2 @@
+# dumogu.github.io
+mylog
