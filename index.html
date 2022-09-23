@@ -2,11 +2,29 @@
 <html>
     <head>
         <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>小熊网页</title>
     </head>
     <body>这是小熊的一个学习文档！</body>
-<video width="420" controls>
-  <source src="movie.mp4" type="video/mp4">
- Your browser does not support the video tag.
-</video>
+
+
+    <video width="420" controls>
+        <source src="movie.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <canvas id="myCanvas" width="500" height="300" style="border:1px solid #d3d3d3;">
+        您的浏览器不支持 HTML5 canvas 标签。
+
+    </canvas>
+
+    <script>
+        var c=document.getElementById("myCanvas");
+        var ctx=c.getContext("2d");
+        ctx.rect(50,30,400,240);
+        ctx.stroke();
+
+    </script>
+
+<button type="button">点我!</button>
 </html>
