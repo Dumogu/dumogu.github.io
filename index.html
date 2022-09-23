@@ -1,30 +1,33 @@
 <!DOCTYPE html>
-<html>
+<html lang="cn">
     <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>小熊网页</title>
+        <meta charset="UTF-8">
+        <title>小熊网址</title>
+        <style type="text/css">
+        body
+        {background-color:#8FBC8F;}
+        a
+        {text-decoration: none;color: #483D8B;}
+        a:hover
+        {text-decoration: underline;color: orange;}
+        </style>
     </head>
-    <body>这是小熊的一个学习文档！</body>
 
 
-    <video width="420" controls>
-        <source src="movie.mp4" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
-
-    <canvas id="myCanvas" width="500" height="300" style="border:1px solid #d3d3d3;">
-        您的浏览器不支持 HTML5 canvas 标签。
-
-    </canvas>
-
-    <script>
-        var c=document.getElementById("myCanvas");
-        var ctx=c.getContext("2d");
-        ctx.rect(50,30,400,240);
-        ctx.stroke();
-
-    </script>
-
-<button type="button">点我!</button>
+    <body>
+    <center>
+        <h1><a href="#c" id="x">这是小熊的测试</a>
+        <hr>
+        </h1>
+        <a href="#b" id="a">去底部</a>  <a href="#c">去指定位置</a>
+        <p>小马小马嘚嘚嘚~~~</p>
+        <img src="./sm.jpg" width=800 height=450>
+        <a href="#" id="c"></a>
+        <p>搭配爱情的美妙只有我们知道</p>
+        <p>常用网站：</p>
+        <a href="http://www.kugou.com/">酷狗音乐     </a>
+        <a href="https://y.qq.com/">QQ音乐     </a>
+        <a href="#a" id='b'>去顶部</a>
+    </center>
+    </body>
 </html>
