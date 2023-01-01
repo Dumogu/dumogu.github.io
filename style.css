@@ -3,6 +3,10 @@ body
 background-color: #8FBC9F;
 font-family: 宋体;
 /*background-image: url("./image/sm.jpg");*/
+margin-top: 50px;
+margin-bottom: 50px;
+margin-right: 100px;
+margin-left: 100px;
 }
 
 a:link {color:#000000;}      /* 未访问链接*/
@@ -10,10 +14,9 @@ a:visited {color:#0000AA;}  /* 已访问链接 */
 a:hover {color:#FF00FF;}  /* 鼠标移动到链接上 */
 a:active {color:#0000FF;}  /* 鼠标点击时 */
 
-h3
+a
 {
-color: black;
-text-align: left;
+margin-right: 10px;
 }
 
 h3{
