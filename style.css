@@ -2,7 +2,7 @@ body
 {
 background-color: #8FBC9F;
 font-family: 宋体;
-
+/*background-image: url("./image/sm.jpg");*/
 }
 
 a:link {color:#000000;}      /* 未访问链接*/
