@@ -1,0 +1,25 @@
+body
+{
+background-color: #8FBC9F;
+font-family: 宋体;
+/*background-image: url("./image/sm.jpg");*/
+margin-top: 5px;
+margin-bottom: 5px;
+margin-right: 5px;
+margin-left: 5px;
+}
+
+a:link {color:#000000;}      /* 未访问链接*/
+a:visited {color:#0000AA;}  /* 已访问链接 */
+a:hover {color:#FF00FF;}  /* 鼠标移动到链接上 */
+a:active {color:#0000FF;}  /* 鼠标点击时 */
+
+a
+{
+margin-right: 10px;
+}
+
+h3{
+  background-color: #229999;
+  opacity: 0.8;
+}
