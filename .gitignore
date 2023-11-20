@@ -139,3 +139,11 @@ cython_debug/
 .idea/workspace.xml
 *.iml
 *.xml
+.lightly
+.c_bin
+.classes
+logs
+node_modules
+dist
+dist-ssr
+*.local
