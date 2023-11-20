@@ -4,14 +4,18 @@
 <head>
     <meta charset="UTF-8">
     <title>这是一个测试网址</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="css/phstyle.css" rel="stylesheet" type="text/css" media="screen and (max-width: 640px)">
+    <link rel="icon" type="image/x-ico" href="./image/xiong.jpg" />
 </head>
 
 <body>
 
-    <p id="demo">一个段落。</p>
-    <button type="button" onclick="write('This is also a Test!')">试一试</button>
-
-
+    <h1>身份证转换</h1>
+    <p>请输入符合条件的15位身份证号：</p>
+    <input id="idcard">
+    <button type="button" onclick="myFunction()">转换</button>
+    <p id="newidcard"></p>
     <script src="./script/base.js"></script>
 </body>
 
