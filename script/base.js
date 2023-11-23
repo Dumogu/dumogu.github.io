@@ -1,6 +1,6 @@
 
 function changeID() {
-    let x = document.getElementById("idcard").value;
+   //  let x = document.getElementById("idcard").value;
    let text;
    let string = String(x)
    let len = string.length
@@ -33,7 +33,7 @@ function changeID() {
       }
       console.log(text)
    };
-    document.getElementById("newID").innerHTML = text;
+   //  document.getElementById("newID").innerHTML = text;
 }
 
 // function change(){
@@ -57,7 +57,7 @@ function changeID() {
 //        return string
 // }
 
-changeID('412727710712706')//41272719710712706X  412727710712706
+// changeID('412727710712706')//41272719710712706X  412727710712706
 // console.log('This is a test!')
 
 function checkDate(year,month,day){
@@ -74,4 +74,5 @@ function checkDate(year,month,day){
    return check
 }
 console.log(checkDate('1999','02','28'))
+
 
