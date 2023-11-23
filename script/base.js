@@ -1,6 +1,6 @@
 
 function changeID() {
-   //  let x = document.getElementById("idcard").value;
+   let x = document.getElementById("idcard").value;
    let text;
    let string = String(x)
    let len = string.length
@@ -33,7 +33,7 @@ function changeID() {
       }
       console.log(text)
    };
-   //  document.getElementById("newID").innerHTML = text;
+     document.getElementById("newID").innerHTML = text;
 }
 
 // function change(){
