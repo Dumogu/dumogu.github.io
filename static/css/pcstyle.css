@@ -1,25 +1,52 @@
-body
-{
-background-color: rgb(100, 200, 200);
-font-family: 宋体;
-/*background-image: url("./image/sm.jpg");*/
-margin-top: 50px;
-margin-bottom: 50px;
-margin-right: 100px;
-margin-left: 100px;
+body{
+    background-color: rgb(100, 200, 200);
+    font-family: 微软雅黑;
+    /*background-image: url("./image/sm.jpg");*/
+    margin-top: 50px;
+    margin-bottom: 50px;
+    margin-right: 50px;
+    margin-left: 50px;
+    width:1060px;
+    }
+
+span.first{
+text-align:left;
+width:118px;
+margin:10px;
 }
 
-a:link {color:#000000;}      /* 未访问链接*/
-a:visited {color:#0000AA;}  /* 已访问链接 */
+
+span{
+    margin-right:10px;
+    border:2px solid black;
+    width:90px;
+    display:inline-block;
+    text-align:center;
+}
+
+
+div{
+    background-color:#229999;
+    width:100%;
+    font-size:18px;
+}
+
+a{
+    text-align:middle;
+    text-decoration:none;
+}
+
+a:link {color:#0000AA;}      /* 未访问链接*/
+a:visited {color:#8822AA;}  /* 已访问链接 */
 a:hover {color:#FF00FF;}  /* 鼠标移动到链接上 */
 a:active {color:#0000FF;}  /* 鼠标点击时 */
 
-a
-{
-margin-right: 10px;
-}
+a{margin-right: 10px;}
 
-h3{
-  background-color: #229999;
-  opacity: 0.8;
+h1{
+text-align:center;
+margin:50px;
+border:0px solid black;
+padding:10px;
 }
+h3{background-color: #229999;  opacity: 0.9;}
