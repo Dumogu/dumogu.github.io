@@ -2,11 +2,13 @@ body{
     background-color: rgb(100, 200, 200);
     font-family: 微软雅黑;
     /*background-image: url("./image/sm.jpg");*/
+    border:2px dashed black;
     margin-top: 50px;
     margin-bottom: 50px;
-    margin-right: 50px;
-    margin-left: 50px;
-    width:1060px;
+    margin-right: 10%;
+    margin-left: 10%;
+    width:80%;
+    padding:20px;
     }
 
 span.first{
@@ -46,7 +48,7 @@ a{margin-right: 10px;}
 h1{
 text-align:center;
 margin:50px;
-border:0px solid black;
+border:1px solid black;
 padding:10px;
 }
 h3{background-color: #229999;  opacity: 0.9;}
