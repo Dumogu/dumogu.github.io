@@ -1,26 +1,16 @@
 body{
     background-color: rgb(100, 200, 200);
     font-family: 微软雅黑;
-    /*background-image: url("./image/sm.jpg");*/
     border:2px dashed black;
-    margin-top: 50px;
-    margin-bottom: 50px;
-    margin-right: 10%;
-    margin-left: 10%;
-    width:80%;
-    padding:20px;
+    margin:3%;
+    width:88%;
+    padding:2%;
     }
-
-span.first{
-text-align:left;
-width:118px;
-margin:10px;
-}
 
 
 span{
     margin-right:10px;
-    border:2px solid black;
+    border:1px solid black;
     width:90px;
     display:inline-block;
     text-align:center;
@@ -47,8 +37,9 @@ a{margin-right: 10px;}
 
 h1{
 text-align:center;
-margin:50px;
+margin-top:2%;
+margin-bottom:3%;
 border:1px solid black;
-padding:10px;
+padding:1%;
 }
 h3{background-color: #229999;  opacity: 0.9;}
