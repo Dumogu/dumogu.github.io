@@ -5,18 +5,26 @@
     <meta charset="UTF-8">
     <title>马思雨的工具箱</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="../static/css/phstyle.css" rel="stylesheet" type="text/css" media="screen and (max-width: 640px)">
-    <link href="../static/css/pcstyle.css" rel="stylesheet" type="text/css" media="screen and (min-width: 640px)">
+    <!-- <link href="../static/css/phstyle.css" rel="stylesheet" type="text/css" media="screen and (max-width: 400px)"> -->
+    <link href="../static/css/pcstyle.css" rel="stylesheet" type="text/css" media="screen and (min-width: 400px)">
     <link rel="icon" type="image/x-ico" href="../static/image/xiong.jpg" />
 </head>
 
 <body>
-<h1>身份证转换</h1>
-<p>请输入符合条件的15位身份证号：<br>举例：412727710712706-->41272719710712706X <hr> </p>
-<input id="idcard">
-<button type="button" onclick="changeID()">转换</button>
-<p id="newID"></p>
-<script src="../static/script/changeid.js"></script>
+    <h1>身份证转换</h1>
+    <p>请输入符合条件的15位身份证号：<br>举例：412727710712706-->41272719710712706X
+        <hr>
+    </p>
+    <input id="idcard", title="输入身份证">
+    <button type="button" onclick="newID()">转换</button>
+    <p id="newID"></p>
+    <script src="../static/script/changeid.js"></script>
+    <script>
+        function newID() {
+            let str = document.getElementById("idcard").value;
+            document.getElementById("newID").innerHTML = changeID(str);
+        }
+    </script>
 </body>
 
 </html>
