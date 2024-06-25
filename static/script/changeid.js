@@ -11,7 +11,7 @@ function changeID(str) {
    }
    else if (len == 18) {
       string = string.slice(0, 6) + string.slice(8, 17)
-      let flag = changeID(string)
+      let flag = checkID(string)
       if (flag == 'ok') {
          return string
       } else {
@@ -32,18 +32,15 @@ function changeID(str) {
       new_string += key_list[sum % 11]
       let check = checkID(new_string);
       if (check == 'ok') {
-         text = splitID(new_string)
+         text = new_string
       } else {
-         text = splitID(new_string) + '<br>身份证日期不合法:' + check
+         text = new_string + '<br>身份证日期不合法:' + check
       };
    };
    return text
 }
 
-function splitID(id) {
-   let string = String(id)
-   return string.slice(0, 6) + "" + string.slice(6, 14) + "" + string.slice(14, 18)
-}
+
 console.log(splitID('41272719710712706X'))
 
 // changeID('412727710712706') //41272719710712706X  412727710712706
