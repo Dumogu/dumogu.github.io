@@ -1,4 +1,4 @@
-function newID() {
+function writeID() {
    let str = document.getElementById("idcard").value;
    document.getElementById("newID").innerHTML = changeID(str);
 }
@@ -16,7 +16,7 @@ function changeID(str) {
    newID = getNewID(string)
    let flag = checkID(newID)
    if (flag == 'ok' && newID.length != string.length) {
-      return "转换成功：" + string
+      return "转换成功：" + newID
    } else if (flag == 'ok' && newID.length == string.length && newID != string) {
       return "号码修正：" + newID
    }
@@ -41,12 +41,6 @@ function getNewID(str) {
    new_string += key_list[sum % 11]
    return new_string
 }
-
-
-console.log(splitID('41272719710712706X'))
-
-// changeID('412727710712706') //41272719710712706X  412727710712706
-console.log('This is a test!')
 
 function checkID(id) {
    let string = String(id)
@@ -79,5 +73,4 @@ function checkDate(year, month, day) {
    }
    return msg
 }
-console.log(checkDate('2000', '02', '30'))
 
