@@ -7,18 +7,19 @@ function changeID(str) {
    // console.log(len);
    if (len != 15 && len != 18) {
       text = '输入字符长度为' + len + ',无法转换！';
-      string = null
+      return text
    }
    else if (len == 18) {
       string = string.slice(0, 6) + string.slice(8, 17)
+      let flag = changeID(string)
+      if (flag == 'ok') {
+         return string
+      } else {
+         return flag
+      }
    }
-   else {
+   else if (len == 15) {
       string = string
-   };
-   if (string == null) {
-      console.log('这个不合法')
-   }
-   else {
       const_list = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2]
       key_list = '10X98765432'
       console.log(string)
@@ -29,29 +30,33 @@ function changeID(str) {
          sum += const_list[i] * str_list[i]
       }
       new_string += key_list[sum % 11]
-      let year = new_string.slice(6, 10);
-      let month = new_string.slice(10, 12);
-      let day = new_string.slice(12, 14);
-      check = checkDate(year, month, day);
-      if (check == 'ok' && string == new_string) {
+      let check = checkID(new_string);
+      if (check == 'ok') {
          text = splitID(new_string)
-      } else if (check == 'ok' && string != new_string) {
-         text = "身份证校验错误，修改为： " + splitID(new_string)
       } else {
          text = splitID(new_string) + '<br>身份证日期不合法:' + check
       };
-   }
+   };
    return text
 }
 
 function splitID(id) {
    let string = String(id)
-   return string.slice(0, 6) + " " + string.slice(6, 14) + " " + string.slice(14, 18)
+   return string.slice(0, 6) + "" + string.slice(6, 14) + "" + string.slice(14, 18)
 }
 console.log(splitID('41272719710712706X'))
 
 // changeID('412727710712706') //41272719710712706X  412727710712706
 console.log('This is a test!')
+
+function checkID(id) {
+   let string = String(id)
+   let year = string.slice(6, 10);
+   let month = string.slice(10, 12);
+   let day = string.slice(12, 14);
+   return checkDate(year, month, day)
+}
+
 
 function checkDate(year, month, day) {
    let run = false
@@ -76,5 +81,4 @@ function checkDate(year, month, day) {
    return msg
 }
 console.log(checkDate('2000', '02', '30'))
-
 
