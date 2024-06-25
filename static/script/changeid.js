@@ -1,3 +1,7 @@
+function newID() {
+   let str = document.getElementById("idcard").value;
+   document.getElementById("newID").innerHTML = changeID(str);
+}
 
 function changeID(str) {
    // let x = document.getElementById("idcard").value;
@@ -9,35 +13,33 @@ function changeID(str) {
       text = '输入字符长度为' + len + ',无法转换！';
       return text
    }
-   else if (len == 18) {
-      string = string.slice(0, 6) + string.slice(8, 17)
-      let flag = checkID(string)
-      if (flag == 'ok') {
-         return string
-      } else {
-         return flag
-      }
+   newID = getNewID(string)
+   let flag = checkID(newID)
+   if (flag == 'ok' && newID.length != string.length) {
+      return "转换成功：" + string
+   } else if (flag == 'ok' && newID.length == string.length && newID != string) {
+      return "号码修正：" + newID
    }
-   else if (len == 15) {
-      string = string
-      const_list = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2]
-      key_list = '10X98765432'
-      console.log(string)
-      let new_string = string.slice(0, 6) + '19' + string.slice(6, 15)
-      str_list = new_string
-      sum = 0
-      for (i = 0; i < 17; i++) {
-         sum += const_list[i] * str_list[i]
-      }
-      new_string += key_list[sum % 11]
-      let check = checkID(new_string);
-      if (check == 'ok') {
-         text = new_string
-      } else {
-         text = new_string + '<br>身份证日期不合法:' + check
-      };
-   };
-   return text
+   else {
+      return flag
+   }
+}
+
+function getNewID(str) {
+   const_list = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2]
+   key_list = '10X98765432'
+   let new_string = ""
+   if (str.length == 15) {
+      new_string = str.slice(0, 6) + '19' + str.slice(6, 15)
+   } else if (str.length == 18) {
+      new_string = str.slice(0, 17)
+   }
+   sum = 0
+   for (i = 0; i < 17; i++) {
+      sum += const_list[i] * new_string[i]
+   }
+   new_string += key_list[sum % 11]
+   return new_string
 }
 
 
