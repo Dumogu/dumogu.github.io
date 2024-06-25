@@ -58,14 +58,17 @@ function checkDate(year, month, day) {
    if (year < 1919) {
       msg = '出生年份有误！' + year
    } else if (run == true && month == 2 && day > 29) {
-      msg = '2月天数有误！' + day
+      msg = '闰年天数有误！' + day
    } else if (run == false && month == 2 && day > 28) {
-      msg = '2月天数有误！' + day
-   } else if (month in [1, 3, 5, 7, 8, 10, 12] && day > 31 || month > 12) {
-      msg = '天数大于31天！或月份不合法！' + month + "" + day
-   } else if (month in [4, 6, 9, 11] && day > 30 || month > 12) {
-      msg = '天数大于30天！或月份不合法！' + month + "" + day
-   } else {
+      msg = '平年天数有误！' + day
+   } else if (month in [1, 3, 5, 7, 8, 10, 12] && day > 31) {
+      msg = '天数大于31天！' + day
+   } else if (month in [4, 6, 9, 11] && day > 30) {
+      msg = '天数大于30天！' + day
+   } else if (month > 12) {
+      msg = '月份大于12月！' + month
+   }
+   else {
       check = true
       msg = 'ok'
    }
