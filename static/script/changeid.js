@@ -4,11 +4,9 @@ function writeID() {
 }
 
 function changeID(str) {
-   // let x = document.getElementById("idcard").value;
    let text;
    let string = String(str)
    let len = string.length
-   // console.log(len);
    if (len != 15 && len != 18) {
       text = '输入字符长度为' + len + ',无法转换！';
       return text
@@ -58,15 +56,15 @@ function checkDate(year, month, day) {
       run = true
    }
    if (year < 1919) {
-      msg = '出生年份有误！'
+      msg = '出生年份有误！' + year
    } else if (run == true && month == 2 && day > 29) {
-      msg = '2月天数有误！'
+      msg = '2月天数有误！' + day
    } else if (run == false && month == 2 && day > 28) {
-      msg = '2月天数有误！'
+      msg = '2月天数有误！' + day
    } else if (month in [1, 3, 5, 7, 8, 10, 12] && day > 31 || month > 12) {
-      msg = '天数大于31天！或月份不合法！'
+      msg = '天数大于31天！或月份不合法！' + month + "" + day
    } else if (month in [4, 6, 9, 11] && day > 30 || month > 12) {
-      msg = '天数大于30天！或月份不合法！'
+      msg = '天数大于30天！或月份不合法！' + month + "" + day
    } else {
       check = true
       msg = 'ok'
