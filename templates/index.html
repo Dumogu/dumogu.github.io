@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">//简体中文
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.5">
+    <title>图片监控与ADB控制</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .pixel-info {
+            position: fixed;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(15px, 15px);
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .pixel-info.active {
+            opacity: 1;
+        }
+
+        .canvas-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .adb-status {
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-lg p-6 max-w-6xl w-full">
+        <h1 class="text-2xl font-bold text-center mb-6 text-blue-600">图片监控与ADB控制系统</h1>
+
+        <div class="mb-4 flex flex-col sm:flex-row gap-4">
+            <div class="flex-1">
+                <div class="flex items-center gap-2">
+                    <span class="text-sm font-medium text-gray-700">监控状态：</span>
+                    <span id="monitorStatus" class="text-sm px-2 py-1 rounded bg-green-100 text-green-800">运行中</span>
+                    <span id="adbStatus" class="text-sm px-2 py-1 rounded bg-gray-100 text-gray-800">ADB未连接</span>
+                </div>
+            </div>
+            <div class="flex-1">
+                <div class="flex items-center space-x-4">
+                    <label class="inline-flex items-center">
+                        <input type="checkbox" id="showCoordinates" checked class="rounded text-blue-600">
+                        <span class="ml-2 text-sm">显示坐标</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input type="checkbox" id="showRGB" checked class="rounded text-blue-600">
+                        <span class="ml-2 text-sm">显示颜色值</span>
+                    </label>
+                    <select id="refreshInterval" class="border rounded px-2 py-1 text-sm">
+                        <option value="500">0.5秒刷新</option>
+                        <option value="1000" selected>1秒刷新</option>
+                        <option value="2000">2秒刷新</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="canvas-container border border-gray-200 rounded-lg overflow-hidden">
+            <img id="screenshot" class="w-full h-auto fade-in cursor-pointer" alt="实时监控的屏幕截图"
+                onerror="this.src='https://picsum.photos/800/600?random=1'">
+            <div id="pixelInfo" class="pixel-info"></div> // 坐标信息框
+        </div>
+
+        <div class="mt-4 bg-gray-50 p-3 rounded-lg">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
+                <div><span class="font-medium">X坐标:</span> <span id="coordX">-</span></div>
+                <div><span class="font-medium">Y坐标:</span> <span id="coordY">-</span></div>
+                <div><span class="font-medium">RGB值:</span> <span id="rgbValue">-</span></div>
+                <div><span class="font-medium">HEX值:</span> <span id="hexValue">-</span></div>
+                <div><span class="font-medium">图片尺寸:</span> <span id="imageSize">-</span></div>
+                <div><span class="font-medium">最后更新:</span> <span id="lastUpdateTime">-</span></div>
+                <div><span class="font-medium">ADB状态:</span> <span id="adbCommandStatus">-</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const screenshot = document.getElementById('screenshot');
+        const pixelInfo = document.getElementById('pixelInfo');
+        const coordX = document.getElementById('coordX');
+        const coordY = document.getElementById('coordY');
+        const rgbValue = document.getElementById('rgbValue');
+        const hexValue = document.getElementById('hexValue');
+        const imageSize = document.getElementById('imageSize');
+        const lastUpdateTime = document.getElementById('lastUpdateTime');
+        const showCoordinates = document.getElementById('showCoordinates');
+        const showRGB = document.getElementById('showRGB');
+        const refreshInterval = document.getElementById('refreshInterval');
+        const monitorStatus = document.getElementById('monitorStatus');
+        const adbStatus = document.getElementById('adbStatus');
+        const adbCommandStatus = document.getElementById('adbCommandStatus');
+
+        let lastUpdate = 0;
+        let refreshTimer = null;
+        let canvas = document.createElement('canvas');
+        let ctx = canvas.getContext('2d');
+        let imageData = null;
+        let currentDeviceSize = { width: 0, height: 0 };
+
+        // 检查ADB连接状态
+        function checkAdbConnection() {
+            fetch('/adb_tap', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ x: 0, y: 0 })
+            }).then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        adbStatus.textContent = 'ADB已连接';
+                        adbStatus.className = 'text-sm px-2 py-1 rounded bg-green-100 text-green-800';
+                    } else {
+                        adbStatus.textContent = 'ADB连接异常';
+                        adbStatus.className = 'text-sm px-2 py-1 rounded bg-red-100 text-red-800';
+                    }
+                }).catch(() => {
+                    adbStatus.textContent = 'ADB连接失败';
+                    adbStatus.className = 'text-sm px-2 py-1 rounded bg-red-100 text-red-800';
+                });
+        }
+
+        // 更新图片显示
+        function updateImage() {
+            const timestamp = new Date().getTime();
+
+            fetch(`/get_image?t=${timestamp}`)
+                .then(response => {
+                    if (!response.ok) throw new Error('图片加载失败');
+                    return response.blob();
+                })
+                .then(blob => {
+                    const url = URL.createObjectURL(blob);
+                    const img = new Image();
+
+                    img.onload = function () {
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        currentDeviceSize = { width: img.width, height: img.height };
+                        ctx.drawImage(img, 0, 0);
+                        imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+
+                        screenshot.classList.remove('fade-in');
+                        setTimeout(() => {
+                            screenshot.src = url;
+                            screenshot.classList.add('fade-in');
+                            imageSize.textContent = `${img.width} × ${img.height}`;
+                            lastUpdateTime.textContent = new Date().toLocaleTimeString();
+                        }, 50);
+                    };
+
+                    img.src = url;
+                })
+                .catch(error => {
+                    console.error('加载图片失败:', error);
+                    monitorStatus.textContent = '监控异常';
+                    monitorStatus.className = 'text-sm px-2 py-1 rounded bg-red-100 text-red-800';
+                });
+        }
+
+        // 获取鼠标位置像素值
+        function getPixelColor(x, y) {
+            if (!imageData || x < 0 || x >= canvas.width || y < 0 || y >= canvas.height) {
+                return null;
+            }
+
+            const offset = (y * canvas.width + x) * 4;
+            return {
+                r: imageData[offset],
+                g: imageData[offset + 1],
+                b: imageData[offset + 2],
+                a: imageData[offset + 3]
+            };
+        }
+
+        // RGB转HEX
+        function rgbToHex(r, g, b) {
+            return '#' + [r, g, b].map(x => {
+                const hex = x.toString(16);
+                return hex.length === 1 ? '0' + hex : hex;
+            }).join('');
+        }
+
+        // 处理鼠标移动事件
+        function handleMouseMove(e) {
+            const rect = screenshot.getBoundingClientRect();
+            const x = Math.floor(e.clientX - rect.left);
+            const y = Math.floor(e.clientY - rect.top);
+
+            const color = getPixelColor(x, y);
+            if (!color) return;
+
+            coordX.textContent = x;
+            coordY.textContent = y;
+            rgbValue.textContent = `${color.r}, ${color.g}, ${color.b}`;
+            hexValue.textContent = rgbToHex(color.r, color.g, color.b);
+
+            let infoText = '';
+            if (showCoordinates.checked) {
+                infoText += `X: ${x}, Y: ${y}`;
+            }
+            if (showRGB.checked) {
+                if (infoText) infoText += '\n';
+                infoText += `RGB: ${color.r}, ${color.g}, ${color.b}`;
+                infoText += `\nHEX: ${rgbToHex(color.r, color.g, color.b)}`;
+            }
+
+            pixelInfo.textContent = infoText;
+            pixelInfo.style.left = `${e.clientX}px`;
+            pixelInfo.style.top = `${e.clientY}px`;
+            pixelInfo.classList.add('active');
+        }
+
+        // 处理图片点击事件
+        function handleImageClick(e) {
+            const rect = screenshot.getBoundingClientRect();
+            const x = Math.floor(e.clientX - rect.left);
+            const y = Math.floor(e.clientY - rect.top);
+
+            adbCommandStatus.textContent = '发送中...';
+            adbCommandStatus.className = 'text-blue-600';
+
+            fetch('/adb_tap', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ x, y })
+            }).then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        adbCommandStatus.textContent = '指令发送成功';
+                        adbCommandStatus.className = 'text-green-600';
+                    } else {
+                        adbCommandStatus.textContent = '指令发送失败';
+                        adbCommandStatus.className = 'text-red-600';
+                    }
+                }).catch(() => {
+                    adbCommandStatus.textContent = '网络错误';
+                    adbCommandStatus.className = 'text-red-600';
+                });
+        }
+
+        // 检查图片更新
+        function checkForUpdates() {
+            fetch('/check_update')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.last_update > lastUpdate) {
+                        lastUpdate = data.last_update;
+                        updateImage();
+                    }
+                });
+        }
+
+        // 设置自动刷新
+        function setupAutoRefresh() {
+            if (refreshTimer) clearInterval(refreshTimer);
+            const interval = parseInt(refreshInterval.value);
+            refreshTimer = setInterval(checkForUpdates, interval);
+        }
+
+        // 事件监听
+        screenshot.addEventListener('mousemove', handleMouseMove);
+        screenshot.addEventListener('mouseout', () => {
+            pixelInfo.classList.remove('active');
+        });
+        screenshot.addEventListener('click', handleImageClick);
+
+        refreshInterval.addEventListener('change', setupAutoRefresh);
+
+        // 初始加载
+        updateImage();
+        setupAutoRefresh();
+        setInterval(checkForUpdates, 1000);
+        checkAdbConnection();
+        setInterval(checkAdbConnection, 30000); // 每30秒检查一次ADB连接
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,289 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADB远程控制面板</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .gesture-line { height:3px; background:rgba(255,0,0,0.7); position:absolute; transform-origin:0 0 }
+        .drag-point { width:6px; height:6px; border-radius:50%; background:red; position:absolute }
+        .mode-btn.active { background:#3b82f6; color:white }
+        .fade-in { animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen p-4">
+    <div class="max-w-6xl mx-auto bg-white rounded-xl shadow-lg p-6">
+        <h1 class="text-2xl font-bold text-center mb-6 text-blue-600">ADB远程控制面板</h1>
+        
+        <div class="flex flex-wrap justify-between mb-4">
+            <div class="flex items-center space-x-2 mb-2 sm:mb-0">
+                <span class="text-sm font-medium">操作模式：</span>
+                <div class="flex bg-gray-100 rounded p-1">
+                    <button id="modeTap" class="mode-btn active px-3 py-1 rounded text-sm">点击</button>
+                    <button id="modeSwipe" class="mode-btn px-3 py-1 rounded text-sm">滑动</button>
+                    <button id="modeDrag" class="mode-btn px-3 py-1 rounded text-sm">拖拽</button>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <select id="refreshRate" class="border rounded px-2 py-1 text-sm">
+                    <option value="500">0.5秒刷新</option>
+                    <option value="1000" selected>1秒刷新</option>
+                    <option value="2000">2秒刷新</option>
+                </select>
+                <button id="refreshBtn" class="bg-blue-500 text-white px-3 py-1 rounded text-sm">手动刷新</button>
+            </div>
+        </div>
+
+        <div class="relative border border-gray-200 rounded-lg overflow-hidden">
+            <img id="screenImg" class="w-full h-auto cursor-pointer fade-in" 
+                 alt="Android设备屏幕截图"
+                 src="/get_image"
+                 onerror="this.src='https://picsum.photos/800/600?random=1'">
+            <div id="gestureOverlay" class="absolute inset-0 pointer-events-none"></div>
+            <div id="pixelInfo" class="absolute hidden bg-black bg-opacity-80 text-white p-2 rounded text-xs pointer-events-none"></div>
+        </div>
+
+        <div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
+            <div><span class="font-medium">当前模式：</span><span id="currentMode">点击</span></div>
+            <div><span class="font-medium">坐标：</span><span id="coordDisplay">-</span></div>
+            <div><span class="font-medium">颜色值：</span><span id="colorDisplay">-</span></div>
+            <div><span class="font-medium">ADB状态：</span><span id="adbStatus" class="text-red-600">检测中...</span></div>
+        </div>
+    </div>
+
+    <script>
+        // 初始化变量
+        const screenImg = document.getElementById('screenImg');
+        const gestureOverlay = document.getElementById('gestureOverlay');
+        const pixelInfo = document.getElementById('pixelInfo');
+        let currentMode = 'tap';
+        let gestureStartPoint = null;
+        let dragPoints = [];
+        let refreshInterval = 1000;
+        let canvas = document.createElement('canvas');
+        let ctx = canvas.getContext('2d');
+        let imageData = null;
+
+        // 初始化应用
+        function initApp() {
+            setupEventListeners();
+            checkAdbConnection();
+            startImageRefresh();
+            loadImageToCanvas();
+        }
+
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 模式切换按钮
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentMode = this.id.replace('mode', '').toLowerCase();
+                    document.getElementById('currentMode').textContent = 
+                        {'tap':'点击','swipe':'滑动','drag':'拖拽'}[currentMode];
+                    resetGesture();
+                });
+            });
+
+            // 刷新率设置
+            document.getElementById('refreshRate').addEventListener('change', function() {
+                refreshInterval = parseInt(this.value);
+                startImageRefresh();
+            });
+
+            // 手动刷新按钮
+            document.getElementById('refreshBtn').addEventListener('click', refreshImage);
+
+            // 图片交互事件
+            screenImg.addEventListener('mousedown', handleGestureStart);
+            screenImg.addEventListener('mousemove', handleMouseMove);
+            screenImg.addEventListener('mouseup', handleGestureEnd);
+            screenImg.addEventListener('mouseleave', handleGestureCancel);
+        }
+
+        // 加载图片到Canvas用于像素检测
+        function loadImageToCanvas() {
+            const img = new Image();
+            img.crossOrigin = 'Anonymous';
+            img.onload = function() {
+                canvas.width = this.width;
+                canvas.height = this.height;
+                ctx.drawImage(this, 0, 0);
+                imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+            };
+            img.src = screenImg.src;
+        }
+
+        // 检查ADB连接状态
+        function checkAdbConnection() {
+            fetch('/adb_command', {
+                method: 'POST',
+                headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({type:'tap',x:0,y:0})
+            }).then(response => response.json())
+              .then(data => {
+                  const statusEl = document.getElementById('adbStatus');
+                  if(data.status === 'success') {
+                      statusEl.textContent = '已连接';
+                      statusEl.className = 'text-green-600';
+                  } else {
+                      statusEl.textContent = '连接失败';
+                      statusEl.className = 'text-red-600';
+                  }
+              })
+              .catch(() => {
+                  document.getElementById('adbStatus').textContent = '检测失败';
+              });
+        }
+
+        // 图片刷新逻辑
+        function startImageRefresh() {
+            clearInterval(window.refreshTimer);
+            refreshImage();
+            window.refreshTimer = setInterval(refreshImage, refreshInterval);
+        }
+
+        function refreshImage() {
+            fetch(`/get_image?t=${new Date().getTime()}`)
+                .then(response => {
+                    if (!response.ok) throw new Error('图片加载失败');
+                    return response.blob();
+                })
+                .then(blob => {
+                    const url = URL.createObjectURL(blob);
+                    const img = new Image();
+                    img.onload = function() {
+                        screenImg.classList.remove('fade-in');
+                        setTimeout(() => {
+                            screenImg.src = url;
+                            screenImg.classList.add('fade-in');
+                            loadImageToCanvas();
+                        }, 50);
+                    };
+                    img.src = url;
+                })
+                .catch(console.error);
+        }
+
+        // 手势处理函数
+        function handleGestureStart(e) {
+            const rect = screenImg.getBoundingClientRect();
+            gestureStartPoint = {
+                x: e.clientX - rect.left,
+                y: e.clientY - rect.top,
+                time: Date.now()
+            };
+            
+            if(currentMode === 'drag') {
+                dragPoints = [gestureStartPoint];
+                updateDragVisual();
+            }
+        }
+
+        function handleMouseMove(e) {
+            // 像素信息显示
+            const rect = screenImg.getBoundingClientRect();
+            const x = Math.floor(e.clientX - rect.left);
+            const y = Math.floor(e.clientY - rect.top);
+            
+            if(imageData) {
+                const offset = (y * canvas.width + x) * 4;
+                const r = imageData[offset];
+                const g = imageData[offset+1];
+                const b = imageData[offset+2];
+                const hex = `#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`;
+                
+                document.getElementById('coordDisplay').textContent = `${x}, ${y}`;
+                document.getElementById('colorDisplay').textContent = hex;
+                
+                pixelInfo.innerHTML = `X: ${x}<br>Y: ${y}<br>RGB: ${r},${g},${b}<br>HEX: ${hex}`;
+                pixelInfo.style.left = `${e.clientX + 10}px`;
+                pixelInfo.style.top = `${e.clientY + 10}px`;
+                pixelInfo.classList.remove('hidden');
+            }
+
+            // 手势跟踪
+            if(!gestureStartPoint) return;
+            const currentPoint = {x, y};
+            
+            if(currentMode === 'swipe') {
+                drawSwipeLine(gestureStartPoint, currentPoint);
+            } else if(currentMode === 'drag') {
+                dragPoints.push(currentPoint);
+                updateDragVisual();
+            }
+        }
+
+        function handleGestureEnd(e) {
+            if(!gestureStartPoint) return;
+            
+            const rect = screenImg.getBoundingClientRect();
+            const endPoint = {
+                x: e.clientX - rect.left,
+                y: e.clientY - rect.top
+            };
+            
+            executeAdbCommand(currentMode, {
+                x1: gestureStartPoint.x,
+                y1: gestureStartPoint.y,
+                x2: endPoint.x,
+                y2: endPoint.y,
+                duration: Date.now() - gestureStartPoint.time,
+                steps: dragPoints.length
+            });
+            
+            resetGesture();
+        }
+
+        function handleGestureCancel() {
+            resetGesture();
+        }
+
+        // 辅助函数
+        function drawSwipeLine(start, end) {
+            const dx = end.x - start.x;
+            const dy = end.y - start.y;
+            const length = Math.sqrt(dx*dx + dy*dy);
+            const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+            
+            gestureOverlay.innerHTML = `
+                <div class="gesture-line" style="left:${start.x}px;top:${start.y}px;width:${length}px;transform:rotate(${angle}deg)"></div>
+            `;
+        }
+
+        function updateDragVisual() {
+            gestureOverlay.innerHTML = dragPoints.map(point => 
+                `<div class="drag-point" style="left:${point.x-3}px;top:${point.y-3}px"></div>`
+            ).join('');
+        }
+
+        function executeAdbCommand(type, params) {
+            fetch('/adb_command', {
+                method: 'POST',
+                headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({type, ...params})
+            }).then(response => response.json())
+              .then(data => {
+                  if(data.status !== 'success') {
+                      console.error('ADB命令执行失败:', data.message);
+                  }
+              })
+              .catch(console.error);
+        }
+
+        function resetGesture() {
+            gestureStartPoint = null;
+            dragPoints = [];
+            gestureOverlay.innerHTML = '';
+            pixelInfo.classList.add('hidden');
+        }
+
+        // 启动应用
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
