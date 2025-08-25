@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小熊工作台</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .sidebar {
+            scrollbar-width: thin;
+        }
+
+        .content pre {
+            background-color: #f8f8f8;
+            border-radius: 4px;
+        }
+
+        .nav-link:hover {
+            color: #3b82f6;
+            border-bottom: 2px solid #3b82f6;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+<!-- 顶部导航栏 -->
+<header class="bg-white shadow-sm sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+            <i class="fas fa-code text-blue-500 text-2xl"></i>
+            <h1 class="text-xl font-bold text-gray-800">编程教程网</h1>
+        </div>
+        <nav class="hidden md:flex space-x-6">
+            <a href="#" class="nav-link text-gray-600 hover:text-blue-500">首页</a>
+            <a href="#" class="nav-link text-gray-600 hover:text-blue-500">HTML</a>
+            <a href="#" class="nav-link text-gray-600 hover:text-blue-500">CSS</a>
+            <a href="#" class="nav-link text-gray-600 hover:text-blue-500">JavaScript</a>
+            <a href="#" class="nav-link text-gray-600 hover:text-blue-500">Python</a>
+        </nav>
+        <div class="flex items-center space-x-4">
+            <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">登录</button>
+            <button class="md:hidden text-gray-600" id="mobile-menu-button">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- 移动端菜单 -->
+<div class="md:hidden hidden bg-white shadow-lg" id="mobile-menu">
+    <div class="container mx-auto px-4 py-3 flex flex-col space-y-3">
+        <a href="#" class="text-gray-600 hover:text-blue-500 py-2">首页</a>
+        <a href="#" class="text-gray-600 hover:text-blue-500 py-2">HTML</a>
+        <a href="#" class="text-gray-600 hover:text-blue-500 py-2">CSS</a>
+        <a href="#" class="text-gray-600 hover:text-blue-500 py-2">JavaScript</a>
+        <a href="#" class="text-gray-600 hover:text-blue-500 py-2">Python</a>
+    </div>
+</div>
+
+<!-- 主要内容区 -->
+<main class="container mx-auto px-4 py-8 flex flex-col md:flex-row">
+    <!-- 侧边栏导航 -->
+    <aside class="w-full md:w-64 flex-shrink-0 mb-8 md:mb-0 md:mr-8">
+        <div class="bg-white rounded-lg shadow-sm p-4 sticky top-20 sidebar overflow-y-auto max-h-[calc(100vh-80px)]">
+            <h2 class="font-bold text-lg mb-4 text-gray-800 border-b pb-2">HTML 教程</h2>
+            <ul class="space-y-2">
+                <li><a href="#" class="text-gray-600 hover:text-blue-500 block py-1">HTML 简介</a></li>
+                <li><a href="#" class="text-gray-600 hover:text-blue-500 block py-1">HTML 基础</a></li>
+                <li><a href="#" class="text-gray-600 hover:text-blue-500 block py-1">HTML 元素</a></li>
+                <li><a href="#" class="text-gray-600 hover:text-blue-500 block py-1">HTML 属性</a></li>
+                <li><a href="#" class="text-gray-600 hover:text-blue-500 block py-1">HTML 标题</a></li>
+                <li><a href="#" class="text-gray-600 hover:text-blue-500 block py-1">HTML 段落</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <!-- 内容区 -->
+    <article class="flex-grow bg-white rounded-lg shadow-sm p-6 content">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">HTML 简介</h1>
+        <div class="prose max-w-none">
+            <p class="text-gray-700 mb-4">HTML 是用来描述网页的一种语言。</p>
+            <ul class="list-disc pl-6 mb-6 text-gray-700">
+                <li>HTML 指的是超文本标记语言 (Hyper Text Markup Language)</li>
+                <li>HTML 不是一种编程语言，而是一种标记语言 (markup language)</li>
+                <li>标记语言是一套标记标签 (markup tag)</li>
+                <li>HTML 使用标记标签来描述网页</li>
+            </ul>
+
+            <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">HTML 实例</h2>
+            <div class="mb-6">
+                    <pre class="p-4 bg-gray-100 rounded-md overflow-x-auto"><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;页面标题&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;我的第一个标题&lt;/h1&gt;
+    &lt;p&gt;我的第一个段落。&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+            </div>
+
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
+                <p class="text-blue-800"><strong>注意：</strong> 对于中文网页需要使用 &lt;meta charset="utf-8"&gt;
+                    声明编码，否则会出现乱码。</p>
+            </div>
+        </div>
+
+        <div class="flex justify-between mt-8 pt-6 border-t">
+            <a href="#" class="text-blue-500 hover:text-blue-700 flex items-center">
+                <i class="fas fa-arrow-left mr-2"></i> 上一章
+            </a>
+            <a href="#" class="text-blue-500 hover:text-blue-700 flex items-center">
+                下一章 <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+        </div>
+    </article>
+</main>
+
+<!-- 页脚 -->
+<footer class="bg-gray-800 text-white py-8">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+                <h3 class="text-lg font-semibold mb-4">关于我们</h3>
+                <p class="text-gray-400">
+                    编程教程网提供最全面的编程技术教程，涵盖HTML、CSS、JavaScript、Python等多种编程语言。</p>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold mb-4">快速链接</h3>
+                <ul class="space-y-2">
+                    <li><a href="#" class="text-gray-400 hover:text-white">首页</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-white">HTML教程</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-white">CSS教程</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-white">JavaScript教程</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold mb-4">联系我们</h3>
+                <ul class="space-y-2">
+                    <li class="flex items-center text-gray-400"><i class="fas fa-envelope mr-2"></i> contact@example.com
+                    </li>
+                    <li class="flex items-center text-gray-400"><i class="fas fa-phone mr-2"></i> +86 123456789</li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold mb-4">关注我们</h3>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-weixin text-2xl"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-weibo text-2xl"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-github text-2xl"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-400">
+            <p>© 2025 编程教程网 版权所有</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // 移动端菜单切换
+    document.getElementById('mobile-menu-button').addEventListener('click', function () {
+        const menu = document.getElementById('mobile-menu');
+        menu.classList.toggle('hidden');
+    });
+</script>
+</body>
+</html>
