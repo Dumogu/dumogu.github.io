@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>经典扫雷游戏</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(9, 30px);
+            grid-gap: 1px;
+            background-color: #999;
+            border: 2px solid #666;
+        }
+
+        .cell {
+            width: 30px;
+            height: 30px;
+            background-color: #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .cell.revealed {
+            background-color: #eee;
+            cursor: default;
+        }
+
+        .cell.flagged {
+            background-color: #f8d486;
+        }
+
+        .cell.mine {
+            background-color: #ff6b6b;
+        }
+
+        .cell.mine.revealed {
+            background-color: #ff0000;
+        }
+
+        .number-1 {
+            color: blue;
+        }
+
+        .number-2 {
+            color: green;
+        }
+
+        .number-3 {
+            color: red;
+        }
+
+        .number-4 {
+            color: darkblue;
+        }
+
+        .number-5 {
+            color: brown;
+        }
+
+        .number-6 {
+            color: teal;
+        }
+
+        .number-7 {
+            color: black;
+        }
+
+        .number-8 {
+            color: gray;
+        }
+
+        @media (max-width: 400px) {
+            .game-board {
+                grid-template-columns: repeat(16, 25px);
+            }
+
+            .cell {
+                width: 25px;
+                height: 25px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100">
+    <div class="container mx-auto p-4">
+        <h1 class="text-3xl font-bold text-center mb-6">经典扫雷</h1>
+        <div class="game-controls flex justify-between mb-4">
+            <div class="difficulty-selector">
+                <select id="difficulty" class="border rounded p-2">
+                    <option value="easy">简单 (9×9)</option>
+                    <option value="medium">中等 (16×16)</option>
+                    <option value="hard">困难 (30×16)</option>
+                </select>
+                <button id="new-game" class="bg-blue-500 text-white px-4 py-2 rounded ml-2">新游戏</button>
+            </div>
+            <div class="game-info flex items-center">
+                <div class="mines-count mr-4">剩余: <span id="mines-left">10</span></div>
+                <div class="timer">时间: <span id="game-time">0</span>秒</div>
+            </div>
+        </div>
+        <div class="game-board-container bg-white p-4 rounded-lg shadow-lg">
+            <div id="game-board" class="game-board mx-auto"></div>
+        </div>
+        <div class="game-status mt-4 text-center text-xl font-semibold" id="game-status"></div>
+    </div>
+    <script src="..\static\script\game.js"></script>
+</body>
+
+</html>
