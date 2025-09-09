@@ -46,9 +46,9 @@ class MinesweeperGame {
                 this.minesCount = 40;
                 break;
             case 'hard':
-                this.rows = 16;
-                this.cols = 30;
-                this.minesCount = 99;
+                this.rows = 25;
+                this.cols = 25;
+                this.minesCount = 100;
                 break;
         }
         this.newGame();
