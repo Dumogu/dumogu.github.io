@@ -4,15 +4,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>经典扫雷游戏</title>
+    <title>信息化思维提升工程</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
         .game-board {
+            /* align-items: center; */
+            justify-content: center;
             display: grid;
             grid-template-columns: repeat(9, 30px);
-            grid-gap: 1px;
-            background-color: #999;
-            border: 2px solid #666;
+            grid-gap: 2px;
+            /* background-color: #999; */
+            /* border: 2px solid #666; */
         }
 
         .cell {
@@ -76,7 +78,7 @@
             color: gray;
         }
 
-        @media (max-width: 400px) {
+        /* @media (max-width: 400px) {
             .game-board {
                 grid-template-columns: repeat(16, 25px);
             }
@@ -86,31 +88,36 @@
                 height: 25px;
                 font-size: 12px;
             }
-        }
+        } */
     </style>
 </head>
 
 <body class="bg-gray-100">
     <div class="container mx-auto p-4">
         <h1 class="text-3xl font-bold text-center mb-6">经典扫雷</h1>
-        <div class="game-controls flex justify-between mb-4">
+        <div class="game-controls flex justify-center mb-4">
             <div class="difficulty-selector">
                 <select id="difficulty" class="border rounded p-2">
                     <option value="easy">简单 (9×9)</option>
                     <option value="medium">中等 (16×16)</option>
-                    <option value="hard">困难 (30×16)</option>
+                    <option value="hard">困难 (30×30)</option>
                 </select>
                 <button id="new-game" class="bg-blue-500 text-white px-4 py-2 rounded ml-2">新游戏</button>
             </div>
             <div class="game-info flex items-center">
-                <div class="mines-count mr-4">剩余: <span id="mines-left">10</span></div>
+                <div class="mines-count mr-4"> &emsp;&emsp;剩余: <span id="mines-left">10</span></div>
                 <div class="timer">时间: <span id="game-time">0</span>秒</div>
             </div>
         </div>
-        <div class="game-board-container bg-white p-4 rounded-lg shadow-lg">
-            <div id="game-board" class="game-board mx-auto"></div>
-        </div>
+
+        <!-- 游戏桌布 -->
+        <!-- <div class="game-board-container bg-white p-4 rounded-lg shadow-lg"> -->
+        <div id="game-board" class="game-board mx-auto"></div>
+        <!-- </div> -->
+
+        <!-- 游戏通知 -->
         <div class="game-status mt-4 text-center text-xl font-semibold" id="game-status"></div>
+        <div class="flex underline justify-center bg-red-100"><a href=".\new.html">返回主页</a></div>
     </div>
     <script src="..\static\script\game.js"></script>
 </body>
