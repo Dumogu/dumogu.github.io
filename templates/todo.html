@@ -4,406 +4,429 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>时间管理待办事项</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>待办事项管理器</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        .task-item { transition: all 0.3s ease; }
-        .task-item:hover { transform: translateY(-2px); }
-        .completed { text-decoration: line-through; opacity: 0.7; }
-        .urgent { border-left: 4px solid #ef4444; }
-        .warning { border-left: 4px solid #f59e0b; }
-        .normal { border-left: 4px solid #10b981; }
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        .task-completed { text-decoration: line-through; color: #9ca3af; }
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        .alert { animation: pulse 1.5s infinite; }
+        .urgent { background-color: #fee2e2; border-left: 4px solid #ef4444; }
+        .warning { background-color: #fef3c7; border-left: 4px solid #f59e0b; }
+        .normal { background-color: #ecfdf5; border-left: 4px solid #10b981; }
+        .import-export-btn { transition: all 0.2s ease; }
+        .import-export-btn:hover { transform: translateY(-2px); }
     </style>
 </head>
-<body class="bg-gradient-to-br from-blue-50 to-indigo-50 min-h-screen">
+<body class="bg-gray-100 min-h-screen">
     <div class="container mx-auto px-4 py-8 max-w-3xl">
-        <h1 class="text-3xl font-bold text-center text-indigo-700 mb-2">时间管理待办事项</h1>
-        <p class="text-center text-gray-500 mb-8">为每个任务设置截止时间，智能提醒</p>
-        
-        <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
-            <div class="flex flex-col md:flex-row gap-2 mb-4">
-                <input type="text" id="taskInput" placeholder="任务内容..." 
-                    class="flex-grow px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                <input type="datetime-local" id="taskTime" 
-                    class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                <button id="addTaskBtn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">
-                    <i class="fas fa-plus mr-2"></i>添加任务
-                </button>
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div class="bg-gradient-to-r from-blue-500 to-purple-600 p-6 text-white">
+                <h1 class="text-2xl font-bold">待办事项管理器</h1>
+                <p class="text-blue-100">记录您的工作与生活</p>
             </div>
-            
-            <div class="flex justify-between items-center mb-4">
-                <div class="flex space-x-4">
-                    <span id="taskCount" class="text-gray-600">0 个任务</span>
-                    <span id="urgentCount" class="text-red-500 hidden"><i class="fas fa-exclamation-circle mr-1"></i><span>0</span> 紧急</span>
+
+            <div class="p-6">
+                <div class="flex flex-wrap gap-3 mb-6">
+                    <input type="text" id="taskInput" placeholder="添加新任务..." 
+                           class="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="datetime-local" id="dueDateInput" 
+                           class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <button id="addBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition import-export-btn">
+                        <i class="fas fa-plus mr-2"></i>添加
+                    </button>
+                    <div class="relative">
+                        <button id="exportBtn" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition import-export-btn">
+                            <i class="fas fa-file-export mr-2"></i>导出
+                        </button>
+                        <div id="exportDropdown" class="hidden absolute right-0 mt-1 w-40 bg-white rounded-md shadow-lg z-10">
+                            <a href="#" class="export-option block px-4 py-2 text-gray-800 hover:bg-gray-100" data-type="json">JSON格式</a>
+                            <a href="#" class="export-option block px-4 py-2 text-gray-800 hover:bg-gray-100" data-type="csv">CSV格式</a>
+                        </div>
+                    </div>
+                    <div class="relative">
+                        <button id="importBtn" class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition import-export-btn">
+                            <i class="fas fa-file-import mr-2"></i>导入
+                        </button>
+                        <div id="importDropdown" class="hidden absolute right-0 mt-1 w-40 bg-white rounded-md shadow-lg z-10">
+                            <label for="jsonImport" class="block px-4 py-2 text-gray-800 hover:bg-gray-100 cursor-pointer">
+                                <input type="file" id="jsonImport" class="hidden" accept=".json">JSON格式
+                            </label>
+                            <label for="csvImport" class="block px-4 py-2 text-gray-800 hover:bg-gray-100 cursor-pointer">
+                                <input type="file" id="csvImport" class="hidden" accept=".csv">CSV格式
+                            </label>
+                        </div>
+                    </div>
                 </div>
-                <div class="flex space-x-2">
-                    <button id="filterAll" class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm">全部</button>
-                    <button id="filterActive" class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">未完成</button>
-                    <button id="filterCompleted" class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">已完成</button>
+
+                <div class="flex items-center mb-4">
+                    <h2 class="text-xl font-semibold text-gray-700">我的待办事项</h2>
+                    <div class="ml-auto flex items-center">
+                        <span class="text-sm text-gray-500 mr-2">筛选:</span>
+                        <select id="filterSelect" class="px-3 py-1 border rounded-lg focus:outline-none">
+                            <option value="all">全部</option>
+                            <option value="completed">已完成</option>
+                            <option value="active">未完成</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="taskList" class="space-y-3">
+                    <!-- 任务列表将在这里动态生成 -->
+                </div>
+
+                <div id="emptyState" class="text-center py-8 text-gray-500">
+                    <i class="fas fa-tasks text-4xl mb-2"></i>
+                    <p>暂无待办事项</p>
                 </div>
             </div>
-            
-            <ul id="taskList" class="space-y-2"></ul>
         </div>
-        
-        <div id="alertContainer" class="fixed bottom-4 right-4 space-y-2"></div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // DOM元素
-            const taskInput = document.getElementById('taskInput');
-            const taskTime = document.getElementById('taskTime');
-            const addTaskBtn = document.getElementById('addTaskBtn');
-            const taskList = document.getElementById('taskList');
-            const taskCount = document.getElementById('taskCount');
-            const urgentCount = document.getElementById('urgentCount');
-            const alertContainer = document.getElementById('alertContainer');
-            const filterAll = document.getElementById('filterAll');
-            const filterActive = document.getElementById('filterActive');
-            const filterCompleted = document.getElementById('filterCompleted');
+        // 初始化任务数组
+        let todos = JSON.parse(localStorage.getItem('todos')) || [];
+        
+        // DOM元素
+        const taskInput = document.getElementById('taskInput');
+        const dueDateInput = document.getElementById('dueDateInput');
+        const addBtn = document.getElementById('addBtn');
+        const taskList = document.getElementById('taskList');
+        const emptyState = document.getElementById('emptyState');
+        const filterSelect = document.getElementById('filterSelect');
+        const exportBtn = document.getElementById('exportBtn');
+        const exportDropdown = document.getElementById('exportDropdown');
+        const importBtn = document.getElementById('importBtn');
+        const importDropdown = document.getElementById('importDropdown');
+        const jsonImport = document.getElementById('jsonImport');
+        const csvImport = document.getElementById('csvImport');
+        
+        // 初始化应用
+        function init() {
+            // 设置默认截止时间为明天此时
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const formattedDate = tomorrow.toISOString().slice(0, 16);
+            dueDateInput.value = formattedDate;
             
-            // 状态管理
-            let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-            let currentFilter = 'all';
-            let alertTimeout;
-            let checkInterval;
-            
-            // 初始化
-            function init() {
-                renderTasks();
-                setupDateTimeInput();
-                startTaskChecker();
-            }
-            
-            // 设置日期时间输入默认值
-            function setupDateTimeInput() {
-                const now = new Date();
-                now.setMinutes(now.getMinutes() + 30);
-                const datetime = now.toISOString().slice(0, 16);
-                taskTime.value = datetime;
-            }
-            
-            // 渲染任务列表
-            function renderTasks() {
-                taskList.innerHTML = '';
-                
-                const filteredTasks = tasks.filter(task => {
-                    if (currentFilter === 'active') return !task.completed;
-                    if (currentFilter === 'completed') return task.completed;
-                    return true;
-                });
-                
-                if (filteredTasks.length === 0) {
-                    taskList.innerHTML = `
-                        <div class="text-center py-8 text-gray-400">
-                            <i class="fas fa-tasks text-4xl mb-2"></i>
-                            <p>暂无任务</p>
-                        </div>
-                    `;
-                    updateTaskCount();
-                    return;
-                }
-                
-                filteredTasks.forEach((task, index) => {
-                    const li = document.createElement('li');
-                    li.className = `task-item bg-white p-4 rounded-lg shadow-sm ${getPriorityClass(task)}`;
-                    
-                    const dueDate = new Date(task.dueTime);
-                    const timeLeft = getTimeLeft(dueDate);
-                    
-                    li.innerHTML = `
-                        <div class="flex items-start">
-                            <input type="checkbox" ${task.completed ? 'checked' : ''} 
-                                class="mt-1 mr-3 h-5 w-5 text-indigo-600 rounded focus:ring-indigo-500" 
-                                data-index="${index}">
-                            <div class="flex-grow">
-                                <div class="flex justify-between items-start">
-                                    <span class="${task.completed ? 'completed' : ''}">${task.text}</span>
-                                    <span class="text-xs ${getTimeLeftClass(dueDate)} ml-2 whitespace-nowrap">
-                                        ${formatTimeLeft(timeLeft)}
-                                    </span>
-                                </div>
-                                <div class="text-xs text-gray-500 mt-1">
-                                    <i class="far fa-clock mr-1"></i>截止: ${formatDateTime(dueDate)}
-                                </div>
-                            </div>
-                            <button class="delete-btn text-gray-400 hover:text-red-500 ml-2" data-index="${index}">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    `;
-                    taskList.appendChild(li);
-                });
-                
-                updateTaskCount();
-                updateUrgentCount();
-            }
-            
-            // 更新任务计数
-            function updateTaskCount() {
-                const activeTasks = tasks.filter(task => !task.completed).length;
-                taskCount.textContent = `${activeTasks} 个待办 / ${tasks.length} 个总数`;
-            }
-            
-            // 更新紧急任务计数
-            function updateUrgentCount() {
-                const now = new Date();
-                const urgentTasks = tasks.filter(task => {
-                    if (task.completed) return false;
-                    const dueDate = new Date(task.dueTime);
-                    return dueDate - now < 24 * 60 * 60 * 1000; // 24小时内
-                }).length;
-                
-                if (urgentTasks > 0) {
-                    urgentCount.classList.remove('hidden');
-                    urgentCount.querySelector('span').textContent = urgentTasks;
-                } else {
-                    urgentCount.classList.add('hidden');
-                }
-            }
-            
-            // 添加新任务
-            function addTask() {
-                const text = taskInput.value.trim();
-                const dueTime = taskTime.value;
-                
-                if (!text) {
-                    showAlert('请输入任务内容', 'error');
-                    return;
-                }
-                
-                if (!dueTime) {
-                    showAlert('请设置截止时间', 'error');
-                    return;
-                }
-                
-                const now = new Date();
-                const selectedTime = new Date(dueTime);
-                
-                if (selectedTime < now) {
-                    showAlert('截止时间不能早于当前时间', 'error');
-                    return;
-                }
-                
-                tasks.push({
-                    text,
-                    dueTime,
-                    completed: false,
-                    createdAt: new Date().toISOString()
-                });
-                
-                saveToLocalStorage();
-                taskInput.value = '';
-                setupDateTimeInput();
-                renderTasks();
-                showAlert('任务已添加', 'success');
-            }
-            
-            // 删除任务
-            function deleteTask(index) {
-                tasks.splice(index, 1);
-                saveToLocalStorage();
-                renderTasks();
-                showAlert('任务已删除', 'info');
-            }
-            
-            // 切换任务完成状态
-            function toggleTask(index) {
-                tasks[index].completed = !tasks[index].completed;
-                saveToLocalStorage();
-                renderTasks();
-                
-                if (tasks[index].completed) {
-                    showAlert('任务已完成', 'success');
-                }
-            }
-            
-            // 保存到本地存储
-            function saveToLocalStorage() {
-                localStorage.setItem('tasks', JSON.stringify(tasks));
-            }
-            
-            // 显示提示信息
-            function showAlert(message, type) {
-                clearTimeout(alertTimeout);
-                
-                const alert = document.createElement('div');
-                alert.className = `px-4 py-3 rounded-lg shadow-md flex items-center ${getAlertClass(type)}`;
-                alert.innerHTML = `
-                    <i class="${getAlertIcon(type)} mr-2"></i>
-                    <span>${message}</span>
-                `;
-                
-                alertContainer.appendChild(alert);
-                
-                alertTimeout = setTimeout(() => {
-                    alert.remove();
-                }, 3000);
-            }
-            
-            // 获取提示样式
-            function getAlertClass(type) {
-                const classes = {
-                    success: 'bg-green-100 text-green-700',
-                    error: 'bg-red-100 text-red-700',
-                    info: 'bg-blue-100 text-blue-700',
-                    warning: 'bg-yellow-100 text-yellow-700'
-                };
-                return classes[type] || classes.info;
-            }
-            
-            // 获取提示图标
-            function getAlertIcon(type) {
-                const icons = {
-                    success: 'fas fa-check-circle',
-                    error: 'fas fa-exclamation-circle',
-                    info: 'fas fa-info-circle',
-                    warning: 'fas fa-exclamation-triangle'
-                };
-                return icons[type] || icons.info;
-            }
-            
-            // 格式化日期时间
-            function formatDateTime(date) {
-                return date.toLocaleString('zh-CN', {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-            }
-            
-            // 获取剩余时间
-            function getTimeLeft(dueDate) {
-                const now = new Date();
-                return dueDate - now;
-            }
-            
-            // 格式化剩余时间
-            function formatTimeLeft(timeLeft) {
-                if (timeLeft <= 0) return '已过期';
-                
-                const seconds = Math.floor(timeLeft / 1000);
-                const minutes = Math.floor(seconds / 60);
-                const hours = Math.floor(minutes / 60);
-                const days = Math.floor(hours / 24);
-                
-                if (days > 0) return `${days}天后`;
-                if (hours > 0) return `${hours}小时后`;
-                if (minutes > 0) return `${minutes}分钟后`;
-                return '即将到期';
-            }
-            
-            // 获取优先级样式
-            function getPriorityClass(task) {
-                if (task.completed) return '';
-                
-                const dueDate = new Date(task.dueTime);
-                const timeLeft = getTimeLeft(dueDate);
-                
-                if (timeLeft <= 0) return 'urgent alert';
-                if (timeLeft < 60 * 60 * 1000) return 'urgent'; // 1小时内
-                if (timeLeft < 24 * 60 * 60 * 1000) return 'warning'; // 24小时内
-                return 'normal';
-            }
-            
-            // 获取剩余时间样式
-            function getTimeLeftClass(dueDate) {
-                const timeLeft = getTimeLeft(dueDate);
-                
-                if (timeLeft <= 0) return 'text-red-500';
-                if (timeLeft < 60 * 60 * 1000) return 'text-red-500'; // 1小时内
-                if (timeLeft < 24 * 60 * 60 * 1000) return 'text-yellow-500'; // 24小时内
-                return 'text-green-500';
-            }
-            
-            // 开始任务检查器
-            function startTaskChecker() {
-                clearInterval(checkInterval);
-                checkInterval = setInterval(() => {
-                    checkDueTasks();
-                    renderTasks();
-                }, 60000); // 每分钟检查一次
-                checkDueTasks(); // 立即检查一次
-            }
-            
-            // 检查到期任务
-            function checkDueTasks() {
-                const now = new Date();
-                const upcomingTasks = tasks.filter(task => {
-                    if (task.completed) return false;
-                    const dueDate = new Date(task.dueTime);
-                    const timeLeft = dueDate - now;
-                    return timeLeft > 0 && timeLeft < 15 * 60 * 1000; // 15分钟内到期
-                });
-                
-                upcomingTasks.forEach(task => {
-                    const dueDate = new Date(task.dueTime);
-                    showAlert(`"${task.text}" 即将在${formatTimeLeft(dueDate - now)}到期`, 'warning');
-                });
-            }
-            
-            // 事件监听
-            addTaskBtn.addEventListener('click', addTask);
+            renderTasks();
+            setupEventListeners();
+        }
+        
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 添加任务
+            addBtn.addEventListener('click', addTask);
             taskInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') addTask();
             });
             
-            taskList.addEventListener('click', (e) => {
-                if (e.target.classList.contains('delete-btn') || e.target.closest('.delete-btn')) {
-                    const index = e.target.closest('.delete-btn').getAttribute('data-index');
-                    deleteTask(index);
-                } else if (e.target.type === 'checkbox') {
-                    const index = e.target.getAttribute('data-index');
-                    toggleTask(index);
+            // 筛选任务
+            filterSelect.addEventListener('change', renderTasks);
+            
+            // 导出功能
+            exportBtn.addEventListener('click', () => {
+                exportDropdown.classList.toggle('hidden');
+                importDropdown.classList.add('hidden');
+            });
+            
+            // 导入功能
+            importBtn.addEventListener('click', () => {
+                importDropdown.classList.toggle('hidden');
+                exportDropdown.classList.add('hidden');
+            });
+            
+            // 导出选项点击
+            document.querySelectorAll('.export-option').forEach(option => {
+                option.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    exportTasks(e.target.dataset.type);
+                    exportDropdown.classList.add('hidden');
+                });
+            });
+            
+            // 文件导入处理
+            jsonImport.addEventListener('change', handleFileImport);
+            csvImport.addEventListener('change', handleFileImport);
+            
+            // 点击其他地方关闭下拉菜单
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('#exportBtn') && !e.target.closest('#exportDropdown')) {
+                    exportDropdown.classList.add('hidden');
+                }
+                if (!e.target.closest('#importBtn') && !e.target.closest('#importDropdown')) {
+                    importDropdown.classList.add('hidden');
                 }
             });
-            
-            filterAll.addEventListener('click', () => {
-                currentFilter = 'all';
-                renderTasks();
-                updateFilterButtons();
-            });
-            
-            filterActive.addEventListener('click', () => {
-                currentFilter = 'active';
-                renderTasks();
-                updateFilterButtons();
-            });
-            
-            filterCompleted.addEventListener('click', () => {
-                currentFilter = 'completed';
-                renderTasks();
-                updateFilterButtons();
-            });
-            
-            function updateFilterButtons() {
-                const buttons = [filterAll, filterActive, filterCompleted];
-                const filters = ['all', 'active', 'completed'];
-                
-                buttons.forEach((btn, index) => {
-                    if (filters[index] === currentFilter) {
-                        btn.classList.remove('bg-gray-100', 'text-gray-700');
-                        btn.classList.add('bg-indigo-100', 'text-indigo-700');
-                    } else {
-                        btn.classList.remove('bg-indigo-100', 'text-indigo-700');
-                        btn.classList.add('bg-gray-100', 'text-gray-700');
-                    }
-                });
+        }
+        
+        // 添加新任务
+        function addTask() {
+            const taskText = taskInput.value.trim();
+            if (taskText === '') {
+                alert('请输入任务内容');
+                return;
             }
             
-            // 初始化应用
-            init();
-        });
+            const dueDate = dueDateInput.value;
+            if (!dueDate) {
+                alert('请设置截止时间');
+                return;
+            }
+            
+            const newTask = {
+                id: Date.now(),
+                text: taskText,
+                completed: false,
+                createdAt: new Date().toISOString(),
+                completedAt: null,
+                dueDate: new Date(dueDate).getTime()
+            };
+            
+            todos.unshift(newTask);
+            saveAndRender();
+            taskInput.value = '';
+            taskInput.focus();
+        }
+        
+        // 渲染任务列表
+        function renderTasks() {
+            const filter = filterSelect.value;
+            const now = new Date().getTime();
+            let filteredTasks = [...todos];
+            
+            if (filter === 'completed') {
+                filteredTasks = todos.filter(task => task.completed);
+            } else if (filter === 'active') {
+                filteredTasks = todos.filter(task => !task.completed);
+            }
+            
+            if (filteredTasks.length === 0) {
+                taskList.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            
+            emptyState.classList.add('hidden');
+            taskList.innerHTML = '';
+            
+            filteredTasks.forEach(task => {
+                const taskElement = document.createElement('div');
+                taskElement.className = 'bg-white border rounded-lg p-4 flex items-center fade-in';
+                taskElement.dataset.id = task.id;
+                
+                // 添加时间敏感样式
+                if (!task.completed && task.dueDate) {
+                    const timeLeft = task.dueDate - now;
+                    const daysLeft = timeLeft / (1000 * 60 * 60 * 24);
+                    
+                    if (daysLeft <= 1) {
+                        taskElement.classList.add('urgent');
+                    } else if (daysLeft <= 2) {
+                        taskElement.classList.add('warning');
+                    } else if (daysLeft <= 7) {
+                        taskElement.classList.add('normal');
+                    }
+                }
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.className = 'mr-3 h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500';
+                checkbox.checked = task.completed;
+                checkbox.addEventListener('change', () => toggleTaskComplete(task.id));
+                
+                const taskContent = document.createElement('div');
+                taskContent.className = 'flex-1';
+                
+                const taskText = document.createElement('div');
+                taskText.className = (task.completed ? 'task-completed' : '') + ' font-medium';
+                taskText.textContent = task.text;
+                
+                const taskDates = document.createElement('div');
+                taskDates.className = 'text-sm text-gray-500 mt-1';
+                
+                // 创建时间
+                const createdAtSpan = document.createElement('span');
+                createdAtSpan.textContent = `创建: ${formatDate(task.createdAt)}`;
+                
+                // 完成时间
+                if (task.completed && task.completedAt) {
+                    const completedAtSpan = document.createElement('span');
+                    completedAtSpan.className = 'ml-2';
+                    completedAtSpan.textContent = `完成: ${formatDate(task.completedAt)}`;
+                    taskDates.appendChild(completedAtSpan);
+                }
+                
+                // 截止时间
+                if (task.dueDate) {
+                    const dueDateSpan = document.createElement('span');
+                    dueDateSpan.className = 'ml-2';
+                    const dueDate = new Date(task.dueDate);
+                    const isOverdue = !task.completed && task.dueDate < now;
+                    if (isOverdue) {
+                        dueDateSpan.classList.add('text-red-500', 'font-medium');
+                    }
+                    dueDateSpan.textContent = `截止: ${formatDate(dueDate.toISOString())}`;
+                    taskDates.appendChild(dueDateSpan);
+                }
+                
+                taskDates.prepend(createdAtSpan);
+                taskContent.appendChild(taskText);
+                taskContent.appendChild(taskDates);
+                
+                // 操作按钮
+                const actionButtons = document.createElement('div');
+                actionButtons.className = 'flex items-center ml-2';
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'text-red-500 hover:text-red-700';
+                deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    deleteTask(task.id);
+                });
+                
+                actionButtons.appendChild(deleteBtn);
+                
+                taskElement.appendChild(checkbox);
+                taskElement.appendChild(taskContent);
+                taskElement.appendChild(actionButtons);
+                
+                taskList.appendChild(taskElement);
+            });
+        }
+        
+        // 切换任务完成状态
+        function toggleTaskComplete(id) {
+            const taskIndex = todos.findIndex(task => task.id === id);
+            if (taskIndex === -1) return;
+            
+            todos[taskIndex].completed = !todos[taskIndex].completed;
+            todos[taskIndex].completedAt = todos[taskIndex].completed ? new Date().toISOString() : null;
+            
+            saveAndRender();
+        }
+        
+        // 删除任务
+        function deleteTask(id) {
+            if (confirm('确定要删除这个任务吗？')) {
+                todos = todos.filter(task => task.id !== id);
+                saveAndRender();
+            }
+        }
+        
+        // 保存到本地存储并重新渲染
+        function saveAndRender() {
+            localStorage.setItem('todos', JSON.stringify(todos));
+            renderTasks();
+        }
+        
+        // 格式化日期
+        function formatDate(isoString) {
+            if (!isoString) return '';
+            const date = new Date(isoString);
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        }
+        
+        // 导出任务
+        function exportTasks(format) {
+            if (todos.length === 0) {
+                alert('没有可导出的任务');
+                return;
+            }
+            
+            let data, mimeType, extension;
+            
+            if (format === 'json') {
+                data = JSON.stringify({ todos }, null, 2);
+                mimeType = 'application/json';
+                extension = 'json';
+            } else if (format === 'csv') {
+                let csv = '任务内容,状态,创建时间,完成时间,截止时间\n';
+                todos.forEach(task => {
+                    csv += `"${task.text.replace(/"/g, '""')}",${task.completed ? '已完成' : '未完成'},"${formatDate(task.createdAt)}","${task.completed ? formatDate(task.completedAt) : ''}","${task.dueDate ? formatDate(new Date(task.dueDate).toISOString()) : ''}"\n`;
+                });
+                data = csv;
+                mimeType = 'text/csv';
+                extension = 'csv';
+            }
+            
+            const blob = new Blob([data], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `待办事项_${new Date().toISOString().slice(0,10)}.${extension}`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        // 处理文件导入
+        function handleFileImport(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const fileType = e.target.fileName ? e.target.fileName.split('.').pop() : 
+                                      file.name.split('.').pop().toLowerCase();
+                    let importedTodos = [];
+                    
+                    if (fileType === 'json') {
+                        const result = JSON.parse(e.target.result);
+                        if (!result.todos && !Array.isArray(result)) {
+                            throw new Error('JSON文件格式不正确');
+                        }
+                        importedTodos = result.todos || result;
+                    } else if (fileType === 'csv') {
+                        const csv = e.target.result;
+                        const lines = csv.split('\n').slice(1);
+                        importedTodos = lines.filter(line => line.trim()).map(line => {
+                            const values = line.split(',');
+                            return {
+                                id: Date.now() + Math.floor(Math.random() * 1000),
+                                text: values[0].replace(/^"|"$/g, ''),
+                                completed: values[1] === '已完成',
+                                createdAt: values[2] ? new Date(values[2].replace(/^"|"$/g, '')).toISOString() : new Date().toISOString(),
+                                completedAt: values[3] ? new Date(values[3].replace(/^"|"$/g, '')).toISOString() : null,
+                                dueDate: values[4] ? new Date(values[4].replace(/^"|"$/g, '')).getTime() : null
+                            };
+                        });
+                    } else {
+                        throw new Error('不支持的文件格式');
+                    }
+                    
+                    // 验证导入数据
+                    if (!Array.isArray(importedTodos)) {
+                        throw new Error('导入数据格式不正确');
+                    }
+                    
+                    // 合并数据（可选择替换或追加）
+                    if (confirm(`导入 ${importedTodos.length} 条任务。是否替换现有任务？(取消将追加到现有任务)`)) {
+                        todos = importedTodos;
+                    } else {
+                        todos = [...importedTodos, ...todos];
+                    }
+                    
+                    saveAndRender();
+                    alert(`成功导入 ${importedTodos.length} 条待办事项`);
+                } catch (error) {
+                    alert('导入失败: ' + error.message);
+                    console.error(error);
+                }
+            };
+            
+            reader.readAsText(file);
+            e.target.value = ''; // 重置文件输入
+        }
+        
+        // 初始化应用
+        init();
     </script>
 </body>
 </html>
