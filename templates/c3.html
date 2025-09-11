@@ -783,15 +783,46 @@
                         if (!firstSheet) continue;
 
                         console.log('Merging sheet:', sheetName);
-                        var [minROW, minCOL, maxROW, maxCOL]=getSheetRange("期间费用预算");
                         
+ 
+                        let minROW=4;
+                        let minCOL=1;
+                        let maxROW=0;
+                        let maxCOL=0;
+                        switch (sheetName.toString())
+                        {
+                            case "期间费用预算":
+                                maxROW=121;
+                                maxCOL=10;
+                                break;
+                            case "利润表预算":
+                                maxROW=51;
+                                maxCOL=17;
+                                break;
+                            case "现金流量预算":
+                                maxROW=43;
+                                maxCOL=10;
+                                break;
+                            case "资产负债表预算":
+                                maxROW=49;
+                                maxCOL=13;
+                                break;
+                            case "固定资产购置预算":
+                                maxROW=15;
+                                maxCOL=8;
+                                break;
+                            default:
+                                maxROW=0;
+                                maxCOL=0;
+                        }
+                        print("minRow->",minROW, "minCol->",minCOL,"maxRow->",maxROW, "maxCol->",maxCOL)
                         // 复制格式和样式
                         newSheet.model = JSON.parse(JSON.stringify(firstSheet.model));
 
                         print("maxRow->",firstSheet.rowCount, "maxCol->",firstSheet.columnCount)
                         
                         // 合并数据区域
-                        for (let row = 1; row <= maxROW; row++) {
+                        for (let row = 4; row <= maxROW; row++) {
                             for (let col = 1; col <= maxCOL; col++) {
                                 const cell = newSheet.getCell(row, col);
                                 let sum = 0;
@@ -802,10 +833,41 @@
                                     const sheet = workbook.getWorksheet(sheetName);
                                     if (sheet) {
                                         const sourceCell = sheet.getCell(row, col);
-                                        print(sourceCell.result)
-                                        if (typeof sourceCell.value === 'number'||sourceCell.value === 'formula') {
+                                        
+                                        if (typeof sourceCell.value === 'number') {
+                                            print(sheetName,row,col, "结果->",sourceCell.value)
                                             sum += sourceCell.value;
                                             hasValue = true;
+                                        }
+                                        else if (typeof sourceCell.value === "string") {
+                                            print("字符")
+                                            continue;
+                                        }
+                                        else if (sourceCell.value === null) {
+                                            print("空值")
+                                            continue;
+                                        }
+                                        // else if (typeof sourceCell.value.result === "number") {
+                                        //     print("result->",sourceCell.value.result)
+                                        //     // sum+=sourceCell.value.result;
+                                        //     hasValue = true;
+                                        //     continue;
+                                        // }
+                                        // else if(typeof sourceCell.value === 'object'&& sourceCell.value!==null){
+                                        //     print(sheetName,row,col,"公式结果", sourceCell.value.result,sourceCell.value.result===undefined) 
+                                        //     if(sourceCell.value.result!=undefined&& typeof sourceCell.value.result==="number"){
+                                        //         print(typeof sourceCell.value.result)
+                                        //         sum += sourceCell.value.result;
+                                        //         hasValue = true;}
+                                        // }
+                                        else{
+                                            print("=============",sourceCell.value.sharedFormula)
+                                            if (sourceCell.value.sharedFormula) {
+                                                // 如果单元格使用共享公式，获取引用的单元格
+                                                const refCell = sheet.getCell(sourceCell.value.sharedFormula);
+                                                print("引用值：",refCell.value); // 返回引用单元格的值
+                                            }
+                                            print(sheetName,row,col,"非数字：",sourceCell.value);
                                         }
                                     }
                                 }
@@ -837,8 +899,12 @@
                         showStatus('文件合并成功！已下载到您的设备。', 'success');
                     }
                 } catch (error) {
+                    console.warn('错误信息:', error.message);
+                    console.warn('堆栈信息:', error.stack);
+                    console.warn('错误类型:', error.name);
                     console.error('Error merging workbooks:', error);
                     showStatus('合并文件时出错: ' + error.message, 'error');
+                
                 } finally {
                     hideLoader();
                     mergeBtn.disabled = false;
