@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Excel文件合并工具</title>
+        <script
+            src="../static/script/xlsx.full.min.js"></script>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <style>
+        .drop-zone {
+            border: 2px dashed #3b82f6;
+            transition: all 0.3s;
+        }
+
+        .drop-zone.active {
+            border-color: #10b981;
+            background-color: #f0fdf4;
+        }
+    </style>
+    </head>
+
+    <body class="bg-gray-100 min-h-screen">
+        <div class="container mx-auto px-4 py-8">
+            <div
+                class="max-w-3xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="p-8">
+                    <h1
+                        class="text-3xl font-bold text-gray-800 mb-2">Excel文件合并工具</h1>
+                    <p
+                        class="text-gray-600 mb-6">选择包含Excel文件的文件夹，系统会自动合并所有xlsx文件</p>
+
+                    <div id="dropZone"
+                        class="drop-zone rounded-lg p-12 text-center mb-6 cursor-pointer">
+                        <i
+                            class="fas fa-folder-open text-4xl text-blue-500 mb-3"></i>
+                        <p
+                            class="text-lg font-medium text-gray-700">点击选择文件夹或拖放文件夹到这里</p>
+                        <p class="text-sm text-gray-500 mt-1">支持.xlsx格式文件</p>
+                        <input type="file" id="folderInput" webkitdirectory
+                            directory multiple class="hidden">
+                    </div>
+
+                    <div id="fileList"
+                        class="hidden mb-6 border rounded-lg divide-y">
+                        <div
+                            class="p-3 bg-gray-50 flex justify-between items-center">
+                            <span class="font-medium">待合并文件列表</span>
+                            <span id="fileCount"
+                                class="text-sm text-gray-500">0个文件</span>
+                        </div>
+                        <div id="filesContainer"
+                            class="max-h-60 overflow-y-auto"></div>
+                    </div>
+
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" id="includeHeaders"
+                                    class="rounded text-blue-500" checked>
+                                <span
+                                    class="ml-2 text-gray-700">包含表头(第一行)</span>
+                            </label>
+                        </div>
+                        <button id="mergeBtn"
+                            class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-6 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition"
+                            disabled>
+                            合并文件
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="resultSection" class="max-w-3xl mx-auto mt-8 hidden">
+                <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="p-8">
+                        <div class="flex items-center mb-4">
+                            <i
+                                class="fas fa-check-circle text-green-500 text-2xl mr-2"></i>
+                            <h2
+                                class="text-xl font-bold text-gray-800">合并完成!</h2>
+                        </div>
+                        <p class="text-gray-600 mb-4">已成功合并 <span
+                                id="mergedCount" class="font-medium">0</span>
+                            个文件，共 <span
+                                id="totalRows" class="font-medium">0</span>
+                            行数据。</p>
+                        <button id="downloadBtn"
+                            class="bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-6 rounded-lg transition">
+                            <i class="fas fa-download mr-2"></i>下载合并后的文件
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const dropZone = document.getElementById('dropZone');
+            const folderInput = document.getElementById('folderInput');
+            const fileList = document.getElementById('fileList');
+            const filesContainer = document.getElementById('filesContainer');
+            const fileCount = document.getElementById('fileCount');
+            const mergeBtn = document.getElementById('mergeBtn');
+            const includeHeaders = document.getElementById('includeHeaders');
+            const resultSection = document.getElementById('resultSection');
+            const mergedCount = document.getElementById('mergedCount');
+            const totalRows = document.getElementById('totalRows');
+            const downloadBtn = document.getElementById('downloadBtn');
+
+            let selectedFiles = [];
+            let mergedWorkbook = null;
+
+            // 处理文件夹选择
+            dropZone.addEventListener('click', () => folderInput.click());
+
+            folderInput.addEventListener('change', (e) => {
+                handleFiles(Array.from(e.target.files));
+            });
+
+            // 拖放功能
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, highlight, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, unhighlight, false);
+            });
+
+            function highlight() {
+                dropZone.classList.add('active');
+            }
+
+            function unhighlight() {
+                dropZone.classList.remove('active');
+            }
+
+            dropZone.addEventListener('drop', (e) => {
+                const items = e.dataTransfer.items;
+                const files = [];
+
+                for (let i = 0; i < items.length; i++) {
+                    const item = items[i].webkitGetAsEntry();
+                    if (item) {
+                        traverseFileTree(item, files);
+                    }
+                }
+
+                // 由于traverseFileTree是异步的，这里需要稍后处理
+                setTimeout(() => {
+                    handleFiles(files);
+                }, 100);
+            });
+
+            function traverseFileTree(item, files, path = '') {
+                if (item.isFile) {
+                    item.file(file => {
+                        file.filepath = path + file.name; // 保存相对路径
+                        files.push(file);
+                    });
+                } else if (item.isDirectory) {
+                    const dirReader = item.createReader();
+                    dirReader.readEntries(entries => {
+                        for (let i = 0; i < entries.length; i++) {
+                            traverseFileTree(entries[i], files, path + item.name + '/');
+                        }
+                    });
+                }
+            }
+
+            function handleFiles(files) {
+                // 过滤出xlsx文件
+                selectedFiles = files.filter(file =>
+                    file.name.toLowerCase().endsWith('.xlsx') && !file.name.toLowerCase().includes('~$') && !file.name.toLowerCase().includes('合并结果')
+                );
+
+
+                if (selectedFiles.length === 0) {
+                    alert('所选文件夹中没有找到.xlsx文件');
+                    return;
+                }
+
+                // 更新文件列表显示
+                filesContainer.innerHTML = '';
+                selectedFiles.forEach(file => {
+                    const fileEl = document.createElement('div');
+                    fileEl.className = 'p-3 flex items-center';
+                    fileEl.innerHTML = `
+                        <i class="fas fa-file-excel text-green-500 mr-3"></i>
+                        <span class="truncate flex-1">${file.name}</span>
+                        <span class="text-sm text-gray-500">${formatFileSize(file.size)}</span>
+                    `;
+                    filesContainer.appendChild(fileEl);
+                });
+
+                fileCount.textContent = `${selectedFiles.length}个文件`;
+                fileList.classList.remove('hidden');
+                mergeBtn.disabled = false;
+            }
+
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+
+            // 合并文件
+            mergeBtn.addEventListener('click', async () => {
+                if (selectedFiles.length === 0) return;
+
+                mergeBtn.disabled = true;
+                mergeBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>合并中...';
+
+                try {
+                    mergedWorkbook = XLSX.utils.book_new();
+                    let totalRowsCount = 0;
+                    let processedFiles = 0;
+
+                    // let moduleWorkbook = XLSX.readFile(`C:\\Users\\64631\\Desktop\\集团公司2025年预算调整\\财务预算\\暂存\\合并预算报表.xlsx`)
+                    // console.log(moduleWorkbook);
+
+                    for (const file of selectedFiles) {
+            
+                        const data = await readFileAsArrayBuffer(file);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        // console.log(file);
+
+                        workbook.SheetNames.forEach(sheetName => {
+                            
+                            const worksheet = workbook.Sheets[sheetName];
+                            // const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: includeHeaders.checked ? 1 : 0});
+                             const jsonData = XLSX.utils.sheet_to_json(worksheet, { header:1});
+                            // const originalHeaders = XLSX.utils.sheet_to_json(firstSheet, { header: 1 })[0];
+                            console.log("header");
+                            console.log(jsonData[2]);
+                            const headers = jsonData[2]
+
+                            // console.log(sheetName);
+                            console.log(jsonData);
+                            if (jsonData.length > 0) {
+                                totalRowsCount += jsonData.length;
+
+                                // 如果工作表已存在，追加数据
+                                if (mergedWorkbook.SheetNames.includes(sheetName)) {
+                                    const existingSheet = mergedWorkbook.Sheets[sheetName];
+                                    const existingData = XLSX.utils.sheet_to_json(existingSheet, { header: includeHeaders.checked ? 1 : 0 });
+                                    const combinedData = existingData.concat(jsonData);
+                                    const newWorksheet = XLSX.utils.json_to_sheet(combinedData, { header:headers,skipHeader: !includeHeaders.checked });
+                                    XLSX.utils.book_append_sheet(mergedWorkbook, newWorksheet, sheetName);
+                                    console.log("追加数据到工作表: ");
+                                } else {
+                                    console.log("创建新工作表: ");
+                                    console.log(jsonData)
+                                    const newWorksheet = XLSX.utils.json_to_sheet(jsonData, { skipHeader: !includeHeaders.checked });
+                                    XLSX.utils.book_append_sheet(mergedWorkbook, newWorksheet, sheetName);
+                                }
+                            }
+                        });
+
+                        processedFiles++;
+                        // 更新进度显示
+                        mergeBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i>合并中 (${processedFiles}/${selectedFiles.length})`;
+                    }
+
+                    // 显示结果
+                    mergedCount.textContent = processedFiles;
+                    totalRows.textContent = totalRowsCount;
+                    resultSection.classList.remove('hidden');
+
+                    // 滚动到结果区域
+                    resultSection.scrollIntoView({ behavior: 'smooth' });
+
+                } catch (error) {
+                    console.error('合并出错:', error);
+                    alert('合并过程中出错: ' + error.message);
+                } finally {
+                    mergeBtn.disabled = false;
+                    mergeBtn.innerHTML = '合并文件';
+                }
+            });
+
+            function readFileAsArrayBuffer(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve(e.target.result);
+                    reader.onerror = (e) => reject(new Error('文件读取失败'));
+                    reader.readAsArrayBuffer(file);
+                });
+            }
+
+            // 下载合并后的文件
+            downloadBtn.addEventListener('click', () => {
+                if (!mergedWorkbook) return;
+
+                const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+                const fileName = `合并结果_${timestamp}.xlsx`;
+
+                XLSX.writeFile(mergedWorkbook, fileName);
+            });
+        });
+    </script>
+    </body>
+
+</html>
