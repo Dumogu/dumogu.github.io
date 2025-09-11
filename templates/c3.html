@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Excel文件合并工具</title>
+        <!-- 使用ExcelJS库 -->
+        <script
+            src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+        <!-- 在其他script标签之后添加 -->
+        <script src="../static/script/utils.js"></script>
+
+        <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            position: relative;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .description {
+            color: #7f8c8d;
+            font-size: 16px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .upload-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            text-align: center;
+            border: 2px dashed #dce1e6;
+            transition: all 0.3s;
+        }
+        
+        .upload-section:hover {
+            border-color: #3498db;
+            background: #f0f8ff;
+        }
+        
+        .upload-section h2 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .file-label {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-weight: 500;
+        }
+        
+        .file-label:hover {
+            background: #2980b9;
+        }
+        
+        .file-name {
+            margin-top: 15px;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+        
+        .editor-section {
+            display: none;
+            margin-bottom: 30px;
+            overflow: auto;
+        }
+        
+        .excel-table {
+            border-collapse: collapse;
+            width: 100%;
+            min-width: 600px;
+        }
+        
+        .excel-table th, .excel-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+            position: relative;
+        }
+        
+        .excel-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+            text-align: center;
+            position: sticky;
+            top: 0;
+        }
+        
+        .excel-table td {
+            background-color: #fff;
+        }
+        
+        .excel-table td:focus {
+            outline: 2px solid #3498db;
+            outline-offset: -2px;
+        }
+        
+        .action-section {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #eaeaea;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background 0.3s;
+            margin: 0 10px;
+        }
+        
+        .btn:hover {
+            background: #27ae60;
+        }
+        
+        .btn-save {
+            background: #2ecc71;
+        }
+        
+        .btn-save:hover {
+            background: #27ae60;
+        }
+        
+        .btn-cancel {
+            background: #e74c3c;
+        }
+        
+        .btn-cancel:hover {
+            background: #c0392b;
+        }
+        
+        .btn-merge {
+            background: #9b59b6;
+        }
+        
+        .btn-merge:hover {
+            background: #8e44ad;
+        }
+        
+        .status-bar {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 6px;
+            text-align: center;
+            display: none;
+        }
+        
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+        
+        .instructions {
+            background: #fff4e6;
+            border-left: 4px solid #ffa94d;
+            padding: 15px;
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+        
+        .instructions h3 {
+            color: #d35400;
+            margin-bottom: 10px;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .file-list {
+            margin-top: 15px;
+            max-height: 500px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            background: #f9f9f9;
+        }
+        
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .file-item:last-child {
+            border-bottom: none;
+        }
+        
+        .file-size {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-left: 10px;
+        }
+        
+        .remove-file {
+            color: #e74c3c;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 16px;
+        }
+        
+        .validation-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .validation-item {
+            margin-bottom: 10px;
+            padding: 8px;
+            border-radius: 4px;
+            background: #e9ecef;
+        }
+        
+        .validation-item.valid {
+            background: #d4edda;
+        }
+        
+        .validation-item.invalid {
+            background: #f8d7da;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 2s linear infinite;
+            margin: 20px auto;
+            display: none;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .btn {
+                display: block;
+                width: 100%;
+                margin: 10px 0;
+            }
+        }
+    </style>
+    </head>
+    <body>
+        <div class="container">
+            <header>
+                <h1>Excel文件合并工具</h1>
+                <p class="description">基于ExcelJS库实现多工作簿数据合并功能</p>
+            </header>
+
+            <div class="upload-section">
+                <h2>上传Excel文件</h2>
+                <label for="file-input" class="file-label"
+                    id="file-label">选择多个XLSX文件</label>
+                <input type="file" id="file-input" accept=".xlsx, .xls"
+                    class="file-input" multiple>
+                <p class="file-name" id="file-name">未选择文件</p>
+                <div class="file-list" id="file-list"></div>
+                <div class="loader" id="loader"></div>
+            </div>
+
+            <div class="validation-section" id="validation-section">
+                <h3>文件验证结果</h3>
+                <div id="validation-results"></div>
+            </div>
+
+            <div class="instructions">
+                <h3>使用说明</h3>
+                <ul>
+                    <li>点击上方按钮选择多个Excel文件（.xlsx）</li>
+                    <li>系统将自动验证每个文件的合规性</li>
+                    <li>验证通过后，点击"合并文件"按钮执行合并操作</li>
+                    <li>验证不通过时，仍然可以强制合并文件</li>
+                    <li>合并规则：同名工作表的数据区域简单相加，其他区域保持原格式</li>
+                    <li>合并完成后，合并后的文件将自动下载到本地</li>
+                    <li>注意：此工具在浏览器中运行，您的文件不会上传到服务器</li>
+                </ul>
+            </div>
+
+            <div class="editor-section" id="editor-section">
+                <h2>表格编辑区</h2>
+                <div id="table-container"></div>
+            </div>
+
+            <div class="action-section">
+                <button id="merge-btn" class="btn btn-merge"
+                    disabled>合并文件</button>
+                <button id="force-merge-btn" class="btn btn-merge"
+                    style="display: none;">强制合并</button>
+                <button id="save-btn" class="btn btn-save"
+                    disabled>保存修改</button>
+                <button id="reset-btn" class="btn btn-cancel">重置</button>
+            </div>
+
+            <div id="status-message" class="status-bar"></div>
+
+            <footer>
+                <p>基于ExcelJS库开发 | 纯前端Excel文件合并工具</p>
+            </footer>
+        </div>
+
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileInput = document.getElementById('file-input');
+            const fileName = document.getElementById('file-name');
+            const fileList = document.getElementById('file-list');
+            const editorSection = document.getElementById('editor-section');
+            const tableContainer = document.getElementById('table-container');
+            const saveBtn = document.getElementById('save-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            const mergeBtn = document.getElementById('merge-btn');
+            const forceMergeBtn = document.getElementById('force-merge-btn');
+            const statusMessage = document.getElementById('status-message');
+            const fileLabel = document.getElementById('file-label');
+            const loader = document.getElementById('loader');
+            const validationSection = document.getElementById('validation-section');
+            const validationResults = document.getElementById('validation-results');
+            
+            let workbooks = [];
+            let worksheet = null;
+            let selectedFiles = [];
+            let validationPassed = false;
+            
+            // 上传文件处理
+            fileInput.addEventListener('change', function(e) {
+                const files = Array.from(e.target.files);
+                if (files.length === 0) return;
+                
+                selectedFiles = files;
+                fileName.textContent = `已选择 ${files.length} 个文件`;
+                
+                // 清空文件列表
+                fileList.innerHTML = '';
+                
+                // 添加文件到列表
+                files.forEach((file, index) => {
+                    const fileItem = document.createElement('div');
+                    fileItem.className = 'file-item';
+                    
+                    // 格式化文件大小
+                    const fileSize = formatFileSize(file.size);
+                    
+                    fileItem.innerHTML = `
+                        <div>
+                            <span>${file.name}</span>
+                            <span class="file-size">(${fileSize})</span>
+                        </div>
+                        <button class="remove-file" data-index="${index}">×</button>
+                    `;
+                    fileList.appendChild(fileItem);
+                });
+                
+                // 添加删除文件事件
+                document.querySelectorAll('.remove-file').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const index = parseInt(this.dataset.index);
+                        selectedFiles.splice(index, 1);
+                        
+                        // 更新文件输入框
+                        const dataTransfer = new DataTransfer();
+                        selectedFiles.forEach(file => dataTransfer.items.add(file));
+                        fileInput.files = dataTransfer.files;
+                        
+                        // 重新渲染文件列表
+                        fileInput.dispatchEvent(new Event('change'));
+                    });
+                });
+                
+                // 加载工作簿
+                if (files.length === 1) {
+                    // 单个文件：加载并显示
+                    loadSingleWorkbook(files[0]);
+                } else {
+                    // 多个文件：验证并准备合并
+                    validateWorkbooks(files);
+                }
+            });
+            
+            // 加载单个工作簿
+            async function loadSingleWorkbook(file) {
+                try {
+                    fileLabel.style.display = 'none';
+                    loader.style.display = 'block';
+                    saveBtn.disabled = true;
+                    mergeBtn.disabled = true;
+                    forceMergeBtn.style.display = 'none';
+                    validationSection.style.display = 'none';
+                    
+                    const arrayBuffer = await readFileAsArrayBuffer(file);
+                    const workbook = new ExcelJS.Workbook();
+                    await workbook.xlsx.load(arrayBuffer);
+                    
+                    // 只保留第一个工作簿
+                    workbooks = [workbook];
+                    
+                    // 获取第一个工作表
+                    worksheet = workbook.getWorksheet(1);
+                    if (!worksheet) {
+                        throw new Error('Excel文件中没有工作表');
+                    }
+                    
+                    // 渲染表格
+                    renderTable();
+                    
+                    editorSection.style.display = 'block';
+                    saveBtn.disabled = false;
+                    
+                    showStatus('文件加载成功！您现在可以编辑表格。', 'success');
+                } catch (error) {
+                    console.error('Error loading workbook:', error);
+                    let errorMsg = '加载文件时出错: ' + error.message;
+                    
+                    if (error.message.includes('corrupted') || error.message.includes('损坏')) {
+                        errorMsg += '。文件可能已损坏，请尝试使用其他文件。';
+                    } else if (error.message.includes('format')) {
+                        errorMsg += '。文件格式可能不受支持。';
+                    }
+                    
+                    showStatus(errorMsg, 'error');
+                } finally {
+                    hideLoader();
+                }
+            }
+            
+            // 验证多个工作簿
+            async function validateWorkbooks(files) {
+                try {
+                    fileLabel.style.display = 'none';
+                    loader.style.display = 'block';
+                    saveBtn.disabled = true;
+                    mergeBtn.disabled = true;
+                    forceMergeBtn.style.display = 'none';
+                    validationSection.style.display = 'block';
+                    validationResults.innerHTML = '';
+                    editorSection.style.display = 'none';
+                    
+                    workbooks = [];
+                    validationPassed = true;
+                    
+                    // 加载所有工作簿
+                    for (const file of files) {
+                        const arrayBuffer = await readFileAsArrayBuffer(file);
+                        const workbook = new ExcelJS.Workbook();
+                        await workbook.xlsx.load(arrayBuffer);
+                        workbooks.push(workbook);
+                    }
+                    
+                    // 验证每个工作簿
+                    for (let i = 0; i < workbooks.length; i++) {
+                        const workbook = workbooks[i];
+                        const file = files[i];
+                        const validationItem = document.createElement('div');
+                        validationItem.className = 'validation-item';
+                        
+                        let isValid = true;
+                        let validationMessage = `<strong>${file.name}</strong>: `;
+                        
+                        // 检查第一个工作表
+                        const sheet1 = workbook.getWorksheet(1);
+                        if (!sheet1) {
+                            validationMessage += "缺少Sheet1工作表";
+                            isValid = false;
+                        } else {
+                            const cellB2 = sheet1.getCell('B2');
+                            if (cellB2.value !== 0) {
+                                validationMessage += `Sheet1的B2单元格值应为0，实际为${cellB2.value}`;
+                                isValid = false;
+                            }
+                        }
+                        
+                        // 检查第三个工作表
+                        const sheet3 = workbook.getWorksheet(3);
+                        if (!sheet3) {
+                            validationMessage += " | 缺少Sheet3工作表";
+                            isValid = false;
+                        } else {
+                            const cellA5 = sheet3.getCell('A5');
+                            if (cellA5.value !== 0) {
+                                validationMessage += ` | Sheet3的A5单元格值应为0，实际为${cellA5.value}`;
+                                isValid = false;
+                            }
+                        }
+                        
+                        if (isValid) {
+                            validationMessage = `<strong>${file.name}</strong>: 验证通过`;
+                            validationItem.classList.add('valid');
+                        } else {
+                            validationItem.classList.add('invalid');
+                            validationPassed = false;
+                        }
+                        
+                        validationItem.innerHTML = validationMessage;
+                        validationResults.appendChild(validationItem);
+                    }
+                    
+                    if (validationPassed) {
+                        showStatus('所有文件验证通过，可以执行合并操作。', 'success');
+                        mergeBtn.disabled = false;
+                        mergeBtn.style.display = 'inline-block';
+                        forceMergeBtn.style.display = 'none';
+                    } else {
+                        showStatus('部分文件验证未通过，您可以选择强制合并或重新选择文件。', 'warning');
+                        mergeBtn.style.display = 'none';
+                        forceMergeBtn.style.display = 'inline-block';
+                        forceMergeBtn.disabled = false;
+                    }
+                } catch (error) {
+                    console.error('Error validating workbooks:', error);
+                    showStatus('验证文件时出错: ' + error.message, 'error');
+                } finally {
+                    hideLoader();
+                }
+            }
+            
+            // 读取文件为ArrayBuffer
+            function readFileAsArrayBuffer(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        resolve(event.target.result);
+                    };
+                    reader.onerror = function() {
+                        reject(new Error('读取文件时发生错误'));
+                    };
+                    reader.readAsArrayBuffer(file);
+                });
+            }
+            
+            // 渲染表格函数
+            function renderTable() {
+                if (!worksheet) return;
+                
+                // 创建表格元素
+                const table = document.createElement('table');
+                table.className = 'excel-table';
+                
+                // 创建表头行
+                const headerRow = document.createElement('tr');
+                
+                // 添加左上角空单元格
+                const cornerHeader = document.createElement('th');
+                headerRow.appendChild(cornerHeader);
+                
+                // 添加列标题（A, B, C, ...）
+                const columnCount = worksheet.columnCount;
+                for (let col = 1; col <= columnCount; col++) {
+                    const colHeader = document.createElement('th');
+                    colHeader.textContent = getColumnLetter(col);
+                    headerRow.appendChild(colHeader);
+                }
+                table.appendChild(headerRow);
+                
+                // 添加数据行
+                worksheet.eachRow({ includeEmpty: true }, (row, rowNumber) => {
+                    const tr = document.createElement('tr');
+                    
+                    // 添加行号单元格
+                    const rowHeader = document.createElement('th');
+                    rowHeader.textContent = rowNumber;
+                    tr.appendChild(rowHeader);
+                    
+                    // 添加数据单元格
+                    row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+                        const td = document.createElement('td');
+                        td.contentEditable = true;
+                        td.textContent = cell.value || '';
+                        
+                        // 添加自定义属性以便保存时定位单元格
+                        td.dataset.row = rowNumber;
+                        td.dataset.col = colNumber;
+                        
+                        // 监听输入变化
+                        td.addEventListener('input', function() {
+                            saveBtn.disabled = false;
+                        });
+                        
+                        tr.appendChild(td);
+                    });
+                    
+                    table.appendChild(tr);
+                });
+                
+                // 清空容器并添加新表格
+                tableContainer.innerHTML = '';
+                tableContainer.appendChild(table);
+            }
+            
+            
+            // 隐藏加载动画并恢复上传按钮
+            function hideLoader() {
+                loader.style.display = 'none';// 隐藏加载动画
+                fileLabel.style.display = 'inline-block';// 显示上传按钮
+            }
+
+            // 保存修改
+            saveBtn.addEventListener('click', async function() {
+                if (workbooks.length === 0 || !worksheet) return;
+                
+                try {
+                    // 禁用保存按钮防止重复点击
+                    saveBtn.disabled = true;
+                    showStatus('正在保存修改...', 'info');
+                    
+                    // 更新工作表数据
+                    const editableCells = tableContainer.querySelectorAll('td[contenteditable="true"]');
+                    editableCells.forEach(td => {
+                        const rowNumber = parseInt(td.dataset.row);
+                        const colNumber = parseInt(td.dataset.col);
+                        
+                        const cell = worksheet.getCell(rowNumber, colNumber);
+                        cell.value = td.textContent;
+                    });
+                    
+                    // 创建Blob并下载
+                    const buffer = await workbooks[0].xlsx.writeBuffer();
+                    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                    
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'modified_' + (fileInput.files[0]?.name || 'spreadsheet.xlsx');
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    
+                    showStatus('文件保存成功！已下载到您的设备。', 'success');
+                } catch (error) {
+                    console.error('Error saving workbook:', error);
+                    let errorMsg = '保存文件时出错: ' + error.message;
+                    
+                    if (error.message.includes('permission') || error.message.includes('权限')) {
+                        errorMsg += '。请检查浏览器下载设置或尝试使用其他浏览器。';
+                    }
+                    
+                    showStatus(errorMsg, 'error');
+                    saveBtn.disabled = false;
+                }
+            });
+            
+            // 合并文件按钮点击事件
+            mergeBtn.addEventListener('click', async function() {
+                await mergeWorkbooks(false);
+            });
+            
+            // 强制合并按钮点击事件
+            forceMergeBtn.addEventListener('click', async function() {
+                if (confirm('部分文件验证未通过，确定要继续合并吗？')) {
+                    await mergeWorkbooks(true);
+                }
+            });
+            
+            // 合并工作簿函数
+            async function mergeWorkbooks(forceMerge) {
+                if (workbooks.length < 2) {
+                    showStatus('请至少选择两个文件进行合并', 'error');
+                    return;
+                }
+                
+                try {
+                    mergeBtn.disabled = true;
+                    forceMergeBtn.disabled = true;
+                    loader.style.display = 'block';
+                    showStatus('正在合并文件...', 'info');
+                    
+                    // 创建新的工作簿用于合并结果
+                    const mergedWorkbook = new ExcelJS.Workbook();
+                    
+                    // 获取所有工作簿的工作表名称
+                    const sheetNames = new Set();
+                    workbooks.forEach(workbook => {
+                        workbook.eachSheet(sheet => {
+                            sheetNames.add(sheet.name);
+                        });
+                    });
+                    
+                    // 合并同名工作表
+                    for (const sheetName of sheetNames) {
+                        const newSheet = mergedWorkbook.addWorksheet(sheetName);
+                        let firstSheet = null;
+                        
+                        // 找到第一个包含此工作表的工作簿
+                        for (const workbook of workbooks) {
+                            const sheet = workbook.getWorksheet(sheetName);
+                            if (sheet) {
+                                firstSheet = sheet;
+                                break;
+                            }
+                        }
+                        
+                        if (!firstSheet) continue;
+
+                        console.log('Merging sheet:', sheetName);
+                        var [minROW, minCOL, maxROW, maxCOL]=getSheetRange("期间费用预算");
+                        
+                        // 复制格式和样式
+                        newSheet.model = JSON.parse(JSON.stringify(firstSheet.model));
+
+                        print("maxRow->",firstSheet.rowCount, "maxCol->",firstSheet.columnCount)
+                        
+                        // 合并数据区域
+                        for (let row = 1; row <= maxROW; row++) {
+                            for (let col = 1; col <= maxCOL; col++) {
+                                const cell = newSheet.getCell(row, col);
+                                let sum = 0;
+                                let hasValue = false;
+                                
+                                // 遍历所有工作簿，对数据区域求和
+                                for (const workbook of workbooks) {
+                                    const sheet = workbook.getWorksheet(sheetName);
+                                    if (sheet) {
+                                        const sourceCell = sheet.getCell(row, col);
+                                        print(sourceCell.result)
+                                        if (typeof sourceCell.value === 'number'||sourceCell.value === 'formula') {
+                                            sum += sourceCell.value;
+                                            hasValue = true;
+                                        }
+                                    }
+                                }
+                                
+                                // 如果所有工作簿中此单元格都是数字，则设置求和结果
+                                if (hasValue) {
+                                    cell.value = sum;
+                                }
+                            }
+                        }
+                    }
+                    
+                    // 创建Blob并下载合并后的文件
+                    const buffer = await mergedWorkbook.xlsx.writeBuffer();
+                    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                    
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'merged_files.xlsx';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    
+                    if (forceMerge) {
+                        showStatus('文件强制合并成功！已下载到您的设备。', 'success');
+                    } else {
+                        showStatus('文件合并成功！已下载到您的设备。', 'success');
+                    }
+                } catch (error) {
+                    console.error('Error merging workbooks:', error);
+                    showStatus('合并文件时出错: ' + error.message, 'error');
+                } finally {
+                    hideLoader();
+                    mergeBtn.disabled = false;
+                    forceMergeBtn.disabled = false;
+                }
+            }
+            
+            // 重置按钮
+            resetBtn.addEventListener('click', function() {
+                if (confirm('确定要重置所有更改吗？')) {
+                    if (workbooks.length > 0 && worksheet) {
+                        renderTable();
+                        saveBtn.disabled = true;
+                        showStatus('所有更改已重置。', 'success');
+                    }
+                }
+            });
+            
+            // 显示状态消息
+            function showStatus(message, type) {
+                statusMessage.textContent = message;
+                statusMessage.className = 'status-bar';
+                
+                if (type === 'success') {
+                    statusMessage.classList.add('status-success');
+                } else if (type === 'error') {
+                    statusMessage.classList.add('status-error');
+                } else if (type === 'warning') {
+                    statusMessage.classList.add('status-warning');
+                } else {
+                    statusMessage.classList.add('status-info');
+                }
+                
+                statusMessage.style.display = 'block';
+                
+                // 5秒后隐藏消息
+                setTimeout(() => {
+                    statusMessage.style.display = 'none';
+                }, 5000);
+            }
+        });
+    </script>
+    </body>
+</html>
