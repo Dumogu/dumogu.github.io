@@ -370,7 +370,7 @@
                 <li>验证不通过时，仍然可以强制合并文件</li>
                 <li>合并规则：同名工作表的数据区域简单相加，其他区域保持原格式</li>
                 <li>合并完成后，合并后的文件将自动下载到本地</li>
-                <li>注意：推荐使用发布的python版线下合并工具（可视检查）或golang版线下合并工具（极速粗暴）</li>
+                <li>注意：请使用发布的python版线下合并工具（可视检查）或golang版线下合并工具（极速粗暴）进行数据合并报送！</li>
                 <li>
                     注意：此工具在浏览器中运行，您的文件不会上传到服务器，经过网页版处理的弊端是合并单元格格式被破坏，不支持打印使用！
                 </li>
@@ -385,8 +385,6 @@
         <div class="action-section">
             <button id="merge-btn" class="btn btn-merge" disabled>合并文件</button>
             <button id="force-merge-btn" class="btn btn-merge" style="display: none">强制合并</button>
-            <button id="save-btn" class="btn btn-save" disabled>保存修改</button>
-
         </div>
 
         <div id="status-message" class="status-bar"></div>
@@ -404,7 +402,6 @@
             const fileList=document.getElementById("file-list");
             const editorSection=document.getElementById("editor-section");
             const tableContainer=document.getElementById("table-container");
-            const saveBtn=document.getElementById("save-btn");
             const mergeBtn=document.getElementById("merge-btn");
             const forceMergeBtn=document.getElementById("force-merge-btn");
             const statusMessage=document.getElementById("status-message");
@@ -480,7 +477,6 @@
                 {
                     fileLabel.style.display="none";
                     loader.style.display="block";
-                    saveBtn.disabled=true;
                     mergeBtn.disabled=true;
                     forceMergeBtn.style.display="none";
                     validationSection.style.display="block";
@@ -524,7 +520,7 @@
 
                             if (!sheet)
                             {
-                                errmsg+=`缺少工作表${sheetName}`;
+                                errmsg+=`缺少工作表：<${sheetName}><br/>`;
                                 return errmsg; // 直接返回，因为没有工作表，后续检查无意义
                             }
 
@@ -667,59 +663,6 @@
                 fileLabel.style.display="inline-block"; // 显示上传按钮
             }
 
-            // 保存修改
-            saveBtn.addEventListener("click", async function()
-            {
-                if (workbooks.length===0||!worksheet) return;
-
-                try
-                {
-                    // 禁用保存按钮防止重复点击
-                    saveBtn.disabled=true;
-                    showStatus("正在保存修改...", "info");
-
-                    // 更新工作表数据
-                    const editableCells=tableContainer.querySelectorAll('td[contenteditable="true"]');
-                    editableCells.forEach((td) =>
-                    {
-                        const rowNumber=parseInt(td.dataset.row);
-                        const colNumber=parseInt(td.dataset.col);
-
-                        const cell=worksheet.getCell(rowNumber, colNumber);
-                        cell.value=td.textContent;
-                    });
-
-                    // 创建Blob并下载
-                    const buffer=await workbooks[0].xlsx.writeBuffer();
-                    const blob=new Blob([buffer], {
-                        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    });
-
-                    const url=URL.createObjectURL(blob);
-                    const a=document.createElement("a");
-                    a.href=url;
-                    a.download="modified_"+(fileInput.files[0]?.name||"spreadsheet.xlsx");
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
-
-                    showStatus("文件保存成功！已下载到您的设备。", "success");
-                } catch (error)
-                {
-                    console.error("Error saving workbook:", error);
-                    let errorMsg="保存文件时出错: "+error.message;
-
-                    if (error.message.includes("permission")||error.message.includes("权限"))
-                    {
-                        errorMsg+="。请检查浏览器下载设置或尝试使用其他浏览器。";
-                    }
-
-                    showStatus(errorMsg, "error");
-                    saveBtn.disabled=false;
-                }
-            });
-
             // 合并文件按钮点击事件
             mergeBtn.addEventListener("click", async function()
             {
@@ -794,11 +737,8 @@
                                 firstSheet=sheet;
                                 firstSheet.eachRow({ includeEmpty: true }, (row) =>
                                 {
-                                    row.height=18; // 所有行统一设置
+                                    row.height=17; // 所有行统一设置
                                 });
-                                firstSheet.getRow(1).height=28;
-                                firstSheet.getRow(2).height=28;
-                                firstSheet.getRow(3).height=28;
                                 break;
                             }
                         }
@@ -842,8 +782,58 @@
                         print("minRow->", minROW, "minCol->", minCOL, "maxRow->", maxROW, "maxCol->", maxCOL);
                         // 复制格式和样式
                         newSheet.model=JSON.parse(JSON.stringify(firstSheet.model));
+                        print("maxRealRow->", firstSheet.rowCount, "maxRealCol->", firstSheet.columnCount);
 
-                        print("maxRow->", firstSheet.rowCount, "maxCol->", firstSheet.columnCount);
+                        print(newSheet.name)
+
+                        if (sheetName.toString()=="期间费用预算")
+                        {
+                            newSheet.mergeCells("A1:K1"); newSheet.mergeCells("B2:D2"); newSheet.mergeCells("A122:K122");
+                            newSheet.getRow(1).height=28;
+                            newSheet.getRow(2).height=28;
+                            newSheet.getRow(3).height=28;
+                        }
+                        else if (sheetName.toString()=="利润表预算")
+                        {
+                            newSheet.mergeCells("A1:R1"); newSheet.mergeCells("C3:E3"); newSheet.mergeCells("F3:H3"); newSheet.mergeCells("I3:K3");
+                            newSheet.mergeCells("A3:A4");
+                            newSheet.mergeCells("B3:B4");
+                            newSheet.mergeCells("L3:L4");
+                            newSheet.mergeCells("M3:M4");
+                            newSheet.mergeCells("N3:N4");
+                            newSheet.mergeCells("O3:O4");
+                            newSheet.mergeCells("P3:P4");
+                            newSheet.mergeCells("Q3:Q4");
+                            newSheet.mergeCells("R3:R4");
+                            newSheet.getRow(1).height=28;
+                            newSheet.getRow(2).height=28;
+                            newSheet.getRow(3).height=28;
+                            newSheet.getRow(4).height=28;
+                        }
+                        else if (sheetName.toString()=="现金流量预算")
+                        {
+                            newSheet.mergeCells("A1:K1"); newSheet.mergeCells("A43:K43"); newSheet.mergeCells("A44:K44");
+                            newSheet.getRow(1).height=28;
+                            newSheet.getRow(2).height=28;
+                            newSheet.getRow(3).height=28;
+                        }
+                        else if (sheetName.toString()=="资产负债表预算")
+                        {
+                            newSheet.mergeCells("A1:N1"); newSheet.mergeCells("A2:F2");
+                            newSheet.getRow(1).height=28;
+                            newSheet.getRow(2).height=28;
+                            newSheet.getRow(3).height=28;
+                        }
+                        else if (sheetName.toString()=="固定资产购置预算")
+                        {
+                            newSheet.mergeCells("A1:F1"); newSheet.mergeCells("A2:B2"); newSheet.mergeCells("C3:E3");
+                            newSheet.mergeCells("A3:A4"); newSheet.mergeCells("F3:F4");
+                            newSheet.getRow(1).height=28;
+                            newSheet.getRow(2).height=28;
+                            newSheet.getRow(3).height=28;
+                            newSheet.getRow(4).height=28;
+                        }
+                        // try { newSheet.mergeCells("A1:K1"); print("合并成功！") } catch (e) { print("重复合并单元格失败！") }
 
                         // 合并数据区域
                         for (let row=minROW; row<=maxROW; row++)
@@ -864,7 +854,7 @@
 
                                         if (typeof sourceCell.value==="number")
                                         {
-                                            print(sheetName, row, col, "结果->", sourceCell.value);
+                                            // print(sheetName, row, col, "结果->", sourceCell.value);
                                             sum+=sourceCell.value;
                                             hasValue=true;
                                         } else if (typeof sourceCell.value==="string")
@@ -957,11 +947,11 @@
 
                 statusMessage.style.display="block";
 
-                // 5秒后隐藏消息
+                // x秒后隐藏消息
                 setTimeout(() =>
                 {
                     statusMessage.style.display="none";
-                }, 5000);
+                }, 10000);
             }
         });
     </script>
