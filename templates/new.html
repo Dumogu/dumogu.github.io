@@ -1,285 +1,269 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>小熊工作台</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
 
-    <!-- 对于支持PNG图标的现代浏览器，可以添加以下行 -->
-    <link rel="icon" href="..\static\image\xiong.png" type="image/png" />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>小熊工作台</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
 
-    <style>
-      .tab-content {
-        display: none;
+  <!-- 对于支持PNG图标的现代浏览器，可以添加以下行 -->
+  <link rel="icon" href="..\static\image\xiong.png" type="image/png" />
+
+  <style>
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .tab-button {
+      padding: 0.5rem 1rem;
+      border-radius: 0.25rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .tab-button.active {
+      background-color: #3b82f6;
+      color: white;
+    }
+
+    .sidebar {
+      scrollbar-width: thin;
+      /* max-width: 200px; */
+      display: flex;
+    }
+
+    pre {
+      background-color: #f8f8f8;
+      border-radius: 4px;
+    }
+
+    .sidebar-content {
+      display: none;
+    }
+
+    .sidebar-content.active {
+      display: block;
+    }
+
+    .nav-link {
+      transition: all 0.3s ease;
+    }
+
+    .nav-link.active {
+      color: #3b82f6;
+      font-weight: 500;
+    }
+
+    .chapter-content {
+      display: none;
+    }
+
+    .chapter-content.active {
+      display: block;
+    }
+
+    .chapter-link {
+      transition: all 0.3s ease;
+    }
+
+    .chapter-link.active {
+      color: #3b82f6;
+      font-weight: 500;
+    }
+
+    /* 添加动画效果 */
+    .fade-in {
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
       }
 
-      .tab-content.active {
-        display: block;
+      to {
+        opacity: 1;
+        transform: translateY(0);
       }
+    }
+  </style>
+</head>
 
-      .tab-button {
-        padding: 0.5rem 1rem;
-        border-radius: 0.25rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-      }
-
-      .tab-button.active {
-        background-color: #3b82f6;
-        color: white;
-      }
-
-      .sidebar {
-        scrollbar-width: thin;
-        /* max-width: 200px; */
-        display: flex;
-      }
-
-      pre {
-        background-color: #f8f8f8;
-        border-radius: 4px;
-      }
-
-      .sidebar-content {
-        display: none;
-      }
-
-      .sidebar-content.active {
-        display: block;
-      }
-
-      .nav-link {
-        transition: all 0.3s ease;
-      }
-
-      .nav-link.active {
-        color: #3b82f6;
-        font-weight: 500;
-      }
-
-      .chapter-content {
-        display: none;
-      }
-
-      .chapter-content.active {
-        display: block;
-      }
-
-      .chapter-link {
-        transition: all 0.3s ease;
-      }
-
-      .chapter-link.active {
-        color: #3b82f6;
-        font-weight: 500;
-      }
-
-      /* 添加动画效果 */
-      .fade-in {
-        animation: fadeIn 0.3s ease-in-out;
-      }
-
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(10px);
-        }
-
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-    </style>
-  </head>
-
-  <body class="bg-gray-100">
-    <!-- 顶部导航栏 -->
-    <header class="bg-white shadow-sm">
-      <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-        <div class="flex items-center space-x-2">
-          <i class="fas fa-code text-blue-500 text-2xl"></i>
-          <h1 class="text-xl font-bold text-gray-800">小熊工作台</h1>
-        </div>
-        <nav class="flex space-x-2">
-          <!-- 修改：默认激活首页导航 -->
-          <a href="#" class="nav-link text-blue-500 font-bold font-medium active" onclick="switchContent('home')"
-            >首页</a
-          >
-          <a href="#" class="nav-link text-gray-600 font-bold hover:text-blue-500" onclick="switchContent('gzyjs')"
-            >预决算</a
-          >
-          <a href="#" class="nav-link text-gray-600 font-bold hover:text-blue-500" onclick="switchContent('css')"
-            >CSS</a
-          >
-        </nav>
-        <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">登录</button>
+<body class="bg-gray-100">
+  <!-- 顶部导航栏 -->
+  <header class="bg-white shadow-sm">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <i class="fas fa-code text-blue-500 text-2xl"></i>
+        <h1 class="text-xl font-bold text-gray-800">小熊工作台</h1>
       </div>
-    </header>
+      <nav class="flex space-x-12">
+        <!-- 修改：默认激活首页导航 -->
+        <a href="#" class="nav-link text-blue-500 font-bold font-medium active" onclick="switchContent('home')">首页</a>
+        <a href="#" class="nav-link text-gray-600 font-bold hover:text-blue-500"
+          onclick="switchContent('gzyjs')">预决算</a>
+        <a href="#" class="nav-link text-gray-600 font-bold hover:text-blue-500" onclick="switchContent('css')">CSS</a>
+      </nav>
+      <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md"> </button>
+    </div>
+  </header>
 
-    <!-- 主要内容区 -->
-    <main class="container mx-auto px-4 py-8 flex">
-      <!-- 侧边栏导航 -->
-      <aside class="w-64 flex-shrink-1 mr-4">
-        <div class="bg-white rounded-lg shadow-sm p-4 sticky top-20 sidebar">
-          <!-- 首页侧边栏 - 修改：默认激活 -->
-          <div id="home-sidebar" class="sidebar-content active">
-            <h2 class="font-bold text-lg mb-4 text-gray-800 border-b pb-2">欢迎</h2>
-            <ul class="space-y-2">
-              <li><a href="#" class="text-gray-600 hover:text-blue-500 block py-1">小白教程</a></li>
-              <li><a href="#" class="text-gray-600 hover:text-blue-500 block py-1">技能进阶</a></li>
-              <li><a href="#" class="text-gray-600 hover:text-blue-500 block py-1">热门链接</a></li>
-            </ul>
+  <!-- 主要内容区 -->
+  <main class="container mx-auto px-4 py-8 flex">
+    <!-- 侧边栏导航 -->
+    <aside class="w-64 flex-shrink-1 mr-4">
+      <div class="bg-white rounded-lg shadow-sm p-4 sticky top-20 sidebar">
+        <!-- 首页侧边栏 - 修改：默认激活 -->
+        <div id="home-sidebar" class="sidebar-content active">
+          <h2 class="font-bold text-lg mb-4 text-gray-800 border-b pb-2">欢迎</h2>
+          <ul class="space-y-2">
+            <li><a href="#" class="text-gray-600 hover:text-blue-500 block py-1">小白教程</a></li>
+            <li><a href="#" class="text-gray-600 hover:text-blue-500 block py-1">技能进阶</a></li>
+            <li><a href="#" class="text-gray-600 hover:text-blue-500 block py-1">热门链接</a></li>
+          </ul>
+        </div>
+
+        <!-- 预决算 侧边栏 -->
+        <div id="gzyjs-sidebar" class="sidebar-content">
+          <h2 class="font-bold text-lg mb-4 text-gray-800 border-b pb-2">预决算 教程</h2>
+          <ul class="space-y-2">
+            <li>
+              <a href="#" class="chapter-link text-gray-600 hover:text-blue-500 block py-1"
+                onclick="switchChapter('gzyjs-intro')">预决算 简介</a>
+            </li>
+            <li>
+              <a href="#" class="chapter-link text-gray-600 hover:text-blue-500 block py-1"
+                onclick="switchChapter('gzyjs-basic')">预决算 基础</a>
+            </li>
+            <li>
+              <a href="#" class="chapter-link text-gray-600 hover:text-blue-500 block py-1"
+                onclick="switchChapter('gzyjs-elements')">预决算 元素</a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- CSS 侧边栏 -->
+        <div id="css-sidebar" class="sidebar-content">
+          <h2 class="font-bold text-lg mb-4 text-gray-800 border-b pb-2">CSS 教程</h2>
+          <ul class="space-y-2">
+            <li>
+              <a href="#" class="chapter-link text-gray-600 hover:text-blue-500 block py-1"
+                onclick="switchChapter('css-intro')">CSS 简介</a>
+            </li>
+            <li>
+              <a href="#" class="chapter-link text-gray-600 hover:text-blue-500 block py-1"
+                onclick="switchChapter('css-selectors')">CSS 选择器</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </aside>
+
+    <!-- 内容区 -->
+    <article class="flex-grow bg-white rounded-lg shadow-sm p-6">
+      <!-- 首页内容 - 修改：默认激活 -->
+      <div id="home-content" class="tab-content active fade-in">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">欢迎来到小熊工作台</h1>
+        <div class="prose max-w-none">
+          <p class="text-gray-700 mb-4">这只是一种学习测试，方便共享一些学习信息。</p>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="bg-blue-50 p-4 rounded-lg">
+              <h2 class="text-xl font-semibold text-blue-800 mb-2">
+                <a href=".\todo.html" class="underline" target="_blank">日程安排</a>
+              </h2>
+              <p class="text-gray-700">基于本地化存储的日程安排。</p>
+            </div>
+            <div class="bg-green-50 p-4 rounded-lg">
+              <h2 class="text-xl font-semibold text-green-800 mb-2">
+                <a href=".\merge.html" target="_blank">预算合并</a>
+              </h2>
+              <p class="text-gray-700">中豫港务预算合并线上工具。</p>
+            </div>
+          </div>
+          <!-- 热门项目 -->
+          <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">热门项目</h2>
+          <ul class="list-disc pl-6 mb-6 text-gray-700">
+            <li><a href=".\shudu.html" class="underline" target="_blank">娱乐活动：数独！</a></li>
+            <li><a href=".\game.html" class="underline" target="_blank">娱乐活动：扫雷！</a></li>
+          </ul>
+          <!-- 快速链接 -->
+          <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">热门链接</h2>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="bg-blue-50 p-4 rounded-lg">
+              <h2 class="text-xl font-semibold text-blue-800 mb-2">
+                <a href="http://123.6.78.202:8088/" target="_blank">BIP 登录</a>
+              </h2>
+              <p class="text-gray-700">BIP超链接，最新核算。</p>
+            </div>
+
+            <div class="bg-green-50 p-4 rounded-lg">
+              <h2 class="text-xl font-semibold text-gray-400 mb-2">
+                <a href="http://123.6.78.209:8088/" target="_blank">NC 登录</a>
+              </h2>
+              <p class="text-gray-700">NC57超链接，往期核算。</p>
+            </div>
+
+            <div class="bg-green-50 p-4 rounded-lg">
+              <h2 class="text-xl font-semibold text-red-800 mb-2">
+                <a href="http://123.6.78.211:9096/zjgl/login/" target="_blank">Bytter登录</a>
+              </h2>
+              <p class="text-gray-700">拜特T6超链接，资金管理</p>
+            </div>
+
+            <div class="bg-green-50 p-4 rounded-lg">
+              <h2 class="text-xl font-semibold text-blue-800 mb-2">
+                <a href="http://36.212.162.175:8082/seeyon/main.do?method=main" target="_blank">OA 登录</a>
+              </h2>
+              <p class="text-gray-700">办公OA超链接，流程管理</p>
+            </div>
+
+            <div class="bg-red-50 p-4 rounded-lg">
+              <h2 class="text-xl font-semibold text-green-800 mb-2">
+                <a href="https://cqxx.hncz.gov.cn:9069/#/login" target="_blank">财政快报登录</a>
+              </h2>
+              <p class="text-gray-700">财政厅快报，数据报送</p>
+            </div>
+
+            <div class="bg-red-50 p-4 rounded-lg">
+              <h2 class="text-xl font-semibold text-green-800 mb-2">
+                <a href="http://192.168.0.19:9998/auth" target="_blank">国资穿透系统</a>
+              </h2>
+              <p class="text-gray-700">国资监测，集团内网</p>
+            </div>
+
           </div>
 
-          <!-- 预决算 侧边栏 -->
-          <div id="gzyjs-sidebar" class="sidebar-content">
-            <h2 class="font-bold text-lg mb-4 text-gray-800 border-b pb-2">预决算 教程</h2>
-            <ul class="space-y-2">
-              <li>
-                <a
-                  href="#"
-                  class="chapter-link text-gray-600 hover:text-blue-500 block py-1"
-                  onclick="switchChapter('gzyjs-intro')"
-                  >预决算 简介</a
-                >
-              </li>
-              <li>
-                <a
-                  href="#"
-                  class="chapter-link text-gray-600 hover:text-blue-500 block py-1"
-                  onclick="switchChapter('gzyjs-basic')"
-                  >预决算 基础</a
-                >
-              </li>
-              <li>
-                <a
-                  href="#"
-                  class="chapter-link text-gray-600 hover:text-blue-500 block py-1"
-                  onclick="switchChapter('gzyjs-elements')"
-                  >预决算 元素</a
-                >
-              </li>
-            </ul>
-          </div>
-
-          <!-- CSS 侧边栏 -->
-          <div id="css-sidebar" class="sidebar-content">
-            <h2 class="font-bold text-lg mb-4 text-gray-800 border-b pb-2">CSS 教程</h2>
-            <ul class="space-y-2">
-              <li>
-                <a
-                  href="#"
-                  class="chapter-link text-gray-600 hover:text-blue-500 block py-1"
-                  onclick="switchChapter('css-intro')"
-                  >CSS 简介</a
-                >
-              </li>
-              <li>
-                <a
-                  href="#"
-                  class="chapter-link text-gray-600 hover:text-blue-500 block py-1"
-                  onclick="switchChapter('css-selectors')"
-                  >CSS 选择器</a
-                >
-              </li>
-            </ul>
+          <div class="bg-red-50 border-l-4 border-blue-500 p-4">
+            <p class="text-blue-800"><strong>注意：</strong> 网站只是用于辅助学习，不是免责道具！</p>
           </div>
         </div>
-      </aside>
+      </div>
 
-      <!-- 内容区 -->
-      <article class="flex-grow bg-white rounded-lg shadow-sm p-6">
-        <!-- 首页内容 - 修改：默认激活 -->
-        <div id="home-content" class="tab-content active fade-in">
-          <h1 class="text-3xl font-bold text-gray-800 mb-6">欢迎来到小熊工作台</h1>
+      <!-- 预决算 内容 -->
+      <div id="gzyjs-content" class="tab-content">
+        <!-- 预决算 简介 -->
+        <div id="gzyjs-intro" class="chapter-content fade-in">
+          <h1 class="text-3xl font-bold text-gray-800 mb-6">预决算 简介</h1>
           <div class="prose max-w-none">
-            <p class="text-gray-700 mb-4">这只是一种学习测试，方便共享一些学习信息。</p>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-              <div class="bg-blue-50 p-4 rounded-lg">
-                <h2 class="text-xl font-semibold text-blue-800 mb-2">
-                  <a href=".\todo.html" class="underline" target="_blank">日程安排</a>
-                </h2>
-                <p class="text-gray-700">基于本地化存储的日程安排。</p>
-              </div>
-              <div class="bg-green-50 p-4 rounded-lg">
-                <h2 class="text-xl font-semibold text-green-800 mb-2">
-                  <a href=".\merge.html" target="_blank">预算合并</a>
-                </h2>
-                <p class="text-gray-700">中豫港务预算合并线上工具。</p>
-              </div>
-            </div>
-            <!-- 热门项目 -->
-            <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">热门项目</h2>
+            <p class="text-gray-700 mb-4">预决算 是用来描述网页的一种语言。</p>
             <ul class="list-disc pl-6 mb-6 text-gray-700">
-              <li><a href=".\shudu.html" class="underline" target="_blank">娱乐活动：数独！</a></li>
-              <li><a href=".\game.html" class="underline" target="_blank">娱乐活动：扫雷！</a></li>
+              <li>预决算 指的是超文本标记语言 (Hyper Text Markup Language)</li>
+              <li>预决算 不是一种编程语言，而是一种标记语言 (markup language)</li>
+              <li>标记语言是一套标记标签 (markup tag)</li>
+              <li>预决算 使用标记标签来描述网页</li>
             </ul>
-            <!-- 快速链接 -->
-            <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">热门链接</h2>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-              <div class="bg-blue-50 p-4 rounded-lg">
-                <h2 class="text-xl font-semibold text-blue-800 mb-2">
-                  <a href="http://123.6.78.202:8088/" target="_blank">BIP 登录</a>
-                </h2>
-                <p class="text-gray-700">BIP超链接，最新核算。</p>
-              </div>
-
-              <div class="bg-green-50 p-4 rounded-lg">
-                <h2 class="text-xl font-semibold text-gray-400 mb-2">
-                  <a href="http://123.6.78.209:8088/" target="_blank">NC 登录</a>
-                </h2>
-                <p class="text-gray-700">NC57超链接，往期核算。</p>
-              </div>
-
-              <div class="bg-green-50 p-4 rounded-lg">
-                <h2 class="text-xl font-semibold text-red-800 mb-2">
-                  <a href="http://123.6.78.211:9096/zjgl/login/" target="_blank">Bytter登录</a>
-                </h2>
-                <p class="text-gray-700">拜特T6超链接，资金管理</p>
-              </div>
-
-              <div class="bg-green-50 p-4 rounded-lg">
-                <h2 class="text-xl font-semibold text-blue-800 mb-2">
-                  <a href="http://36.212.162.175:8082/seeyon/main.do?method=main" target="_blank">OA 登录</a>
-                </h2>
-                <p class="text-gray-700">办公OA超链接，流程管理</p>
-              </div>
-
-              <div class="bg-red-50 p-4 rounded-lg">
-                <h2 class="text-xl font-semibold text-green-800 mb-2">
-                  <a href="https://cqxx.hncz.gov.cn:9069/#/login" target="_blank">财政快报登录</a>
-                </h2>
-                <p class="text-gray-700">财政厅快报，数据报送</p>
-              </div>
-            </div>
-
-            <div class="bg-red-50 border-l-4 border-blue-500 p-4">
-              <p class="text-blue-800"><strong>注意：</strong> 网站只是用于辅助学习，不是免责道具！</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- 预决算 内容 -->
-        <div id="gzyjs-content" class="tab-content">
-          <!-- 预决算 简介 -->
-          <div id="gzyjs-intro" class="chapter-content fade-in">
-            <h1 class="text-3xl font-bold text-gray-800 mb-6">预决算 简介</h1>
-            <div class="prose max-w-none">
-              <p class="text-gray-700 mb-4">预决算 是用来描述网页的一种语言。</p>
-              <ul class="list-disc pl-6 mb-6 text-gray-700">
-                <li>预决算 指的是超文本标记语言 (Hyper Text Markup Language)</li>
-                <li>预决算 不是一种编程语言，而是一种标记语言 (markup language)</li>
-                <li>标记语言是一套标记标签 (markup tag)</li>
-                <li>预决算 使用标记标签来描述网页</li>
-              </ul>
-
-              <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">预决算 实例</h2>
-              <pre class="p-4 bg-gray-100 rounded-md mb-6"><code>&lt;!DOCTYPE gzyjs&gt;
+            <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">预决算 实例</h2>
+            <pre class="p-4 bg-gray-100 rounded-md mb-6"><code>&lt;!DOCTYPE gzyjs&gt;
 &lt;html&gt;
 &lt;head&gt;
     &lt;title&gt;页面标题&lt;/title&gt;
@@ -290,22 +274,22 @@
 &lt;/body&gt;
 &lt;/html&gt;</code></pre>
 
-              <div class="bg-blue-50 border-l-4 border-blue-500 p-4">
-                <p class="text-blue-800">
-                  <strong>注意：</strong> 对于中文网页需要使用 &lt;meta charset="utf-8"&gt; 声明编码，否则会出现乱码。
-                </p>
-              </div>
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-4">
+              <p class="text-blue-800">
+                <strong>注意：</strong> 对于中文网页需要使用 &lt;meta charset="utf-8"&gt; 声明编码，否则会出现乱码。
+              </p>
             </div>
           </div>
+        </div>
 
-          <!-- 预决算 基础 -->
-          <div id="gzyjs-basic" class="chapter-content">
-            <h1 class="text-3xl font-bold text-gray-800 mb-6">预决算 基础</h1>
-            <div class="prose max-w-none">
-              <p class="text-gray-700 mb-4">预决算 文档由嵌套的HTML元素构成。</p>
+        <!-- 预决算 基础 -->
+        <div id="gzyjs-basic" class="chapter-content">
+          <h1 class="text-3xl font-bold text-gray-800 mb-6">预决算 基础</h1>
+          <div class="prose max-w-none">
+            <p class="text-gray-700 mb-4">预决算 文档由嵌套的HTML元素构成。</p>
 
-              <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">预决算 文档结构</h2>
-              <pre class="p-4 bg-gray-100 rounded-md mb-6"><code>&lt;!DOCTYPE gzyjs&gt;
+            <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">预决算 文档结构</h2>
+            <pre class="p-4 bg-gray-100 rounded-md mb-6"><code>&lt;!DOCTYPE gzyjs&gt;
 &lt;gzyjs&gt;
 &lt;head&gt;
     &lt;meta charset="UTF-8"&gt;
@@ -317,68 +301,68 @@
 &lt;/body&gt;
 &lt;/gzyjs&gt;</code></pre>
 
-              <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">预决算 基本概念</h2>
-              <ul class="list-disc pl-6 mb-6 text-gray-700">
-                <li><strong>&lt;!DOCTYPE gzyjs&gt;</strong> - 声明文档类型</li>
-                <li><strong>&lt;gzyjs&gt;</strong> - HTML文档的根元素</li>
-                <li><strong>&lt;head&gt;</strong> - 包含文档的元信息</li>
-                <li><strong>&lt;body&gt;</strong> - 包含可见的页面内容</li>
-              </ul>
-            </div>
-          </div>
-
-          <!-- 预决算 元素 -->
-          <div id="gzyjs-elements" class="chapter-content">
-            <h1 class="text-3xl font-bold text-gray-800 mb-6">预决算 元素</h1>
-            <div class="prose max-w-none">
-              <p class="text-gray-700 mb-4">预决算 元素指的是从开始标签到结束标签的所有代码。</p>
-
-              <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">预决算 元素语法</h2>
-              <ul class="list-disc pl-6 mb-6 text-gray-700">
-                <li>预决算 元素以开始标签起始</li>
-                <li>预决算 元素以结束标签终止</li>
-                <li>元素的内容是开始标签与结束标签之间的内容</li>
-                <li>某些 预决算 元素具有空内容</li>
-                <li>空元素在开始标签中进行关闭</li>
-                <li>大多数 预决算 元素可拥有属性</li>
-              </ul>
-
-              <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">预决算 元素示例</h2>
-              <pre class="p-4 bg-gray-100 rounded-md mb-6"><code>&lt;p&gt;这是一个段落&lt;/p&gt;
-&lt;a href="https://example.com"&gt;这是一个链接&lt;/a&gt;
-&lt;img src="image.jpg" alt="图片描述"&gt;</code></pre>
-            </div>
-          </div>
-
-          <!-- 章节导航 - 添加ID以便JS操作 -->
-          <div class="flex justify-between mt-8 pt-6 border-t">
-            <a href="#" id="prev-chapter" class="text-blue-500 hover:text-blue-700 flex items-center">
-              <i class="fas fa-arrow-left mr-2"></i> 上一章
-            </a>
-            <a href="#" id="next-chapter" class="text-blue-500 hover:text-blue-700 flex items-center">
-              下一章 <i class="fas fa-arrow-right ml-2"></i>
-            </a>
+            <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">预决算 基本概念</h2>
+            <ul class="list-disc pl-6 mb-6 text-gray-700">
+              <li><strong>&lt;!DOCTYPE gzyjs&gt;</strong> - 声明文档类型</li>
+              <li><strong>&lt;gzyjs&gt;</strong> - HTML文档的根元素</li>
+              <li><strong>&lt;head&gt;</strong> - 包含文档的元信息</li>
+              <li><strong>&lt;body&gt;</strong> - 包含可见的页面内容</li>
+            </ul>
           </div>
         </div>
 
-        <!-- CSS 内容 -->
-        <div id="css-content" class="tab-content">
-          <!-- CSS 简介 -->
-          <div id="css-intro" class="chapter-content">
-            <h1 class="text-3xl font-bold text-gray-800 mb-6">CSS 简介</h1>
-            <div class="prose max-w-none">
-              <p class="text-gray-700 mb-4">CSS (层叠样式表) 是一种用来表现HTML或XML等文件样式的计算机语言。</p>
+        <!-- 预决算 元素 -->
+        <div id="gzyjs-elements" class="chapter-content">
+          <h1 class="text-3xl font-bold text-gray-800 mb-6">预决算 元素</h1>
+          <div class="prose max-w-none">
+            <p class="text-gray-700 mb-4">预决算 元素指的是从开始标签到结束标签的所有代码。</p>
 
-              <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">为什么使用 CSS?</h2>
-              <ul class="list-disc pl-6 mb-6 text-gray-700">
-                <li>CSS 节省了大量工作，可以同时控制多个网页的布局</li>
-                <li>外部样式表存储在 CSS 文件中，提高了代码的可维护性</li>
-                <li>样式与内容分离，使HTML更专注于结构</li>
-                <li>提供了丰富的样式控制能力</li>
-              </ul>
+            <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">预决算 元素语法</h2>
+            <ul class="list-disc pl-6 mb-6 text-gray-700">
+              <li>预决算 元素以开始标签起始</li>
+              <li>预决算 元素以结束标签终止</li>
+              <li>元素的内容是开始标签与结束标签之间的内容</li>
+              <li>某些 预决算 元素具有空内容</li>
+              <li>空元素在开始标签中进行关闭</li>
+              <li>大多数 预决算 元素可拥有属性</li>
+            </ul>
 
-              <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">CSS 实例</h2>
-              <pre class="p-4 bg-gray-100 rounded-md mb-6"><code>body {
+            <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">预决算 元素示例</h2>
+            <pre class="p-4 bg-gray-100 rounded-md mb-6"><code>&lt;p&gt;这是一个段落&lt;/p&gt;
+&lt;a href="https://example.com"&gt;这是一个链接&lt;/a&gt;
+&lt;img src="image.jpg" alt="图片描述"&gt;</code></pre>
+          </div>
+        </div>
+
+        <!-- 章节导航 - 添加ID以便JS操作 -->
+        <div class="flex justify-between mt-8 pt-6 border-t">
+          <a href="#" id="prev-chapter" class="text-blue-500 hover:text-blue-700 flex items-center">
+            <i class="fas fa-arrow-left mr-2"></i> 上一章
+          </a>
+          <a href="#" id="next-chapter" class="text-blue-500 hover:text-blue-700 flex items-center">
+            下一章 <i class="fas fa-arrow-right ml-2"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- CSS 内容 -->
+      <div id="css-content" class="tab-content">
+        <!-- CSS 简介 -->
+        <div id="css-intro" class="chapter-content">
+          <h1 class="text-3xl font-bold text-gray-800 mb-6">CSS 简介</h1>
+          <div class="prose max-w-none">
+            <p class="text-gray-700 mb-4">CSS (层叠样式表) 是一种用来表现HTML或XML等文件样式的计算机语言。</p>
+
+            <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">为什么使用 CSS?</h2>
+            <ul class="list-disc pl-6 mb-6 text-gray-700">
+              <li>CSS 节省了大量工作，可以同时控制多个网页的布局</li>
+              <li>外部样式表存储在 CSS 文件中，提高了代码的可维护性</li>
+              <li>样式与内容分离，使HTML更专注于结构</li>
+              <li>提供了丰富的样式控制能力</li>
+            </ul>
+
+            <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">CSS 实例</h2>
+            <pre class="p-4 bg-gray-100 rounded-md mb-6"><code>body {
     background-color: lightblue;
 }
 
@@ -391,295 +375,326 @@ p {
     font-family: verdana;
     font-size: 20px;
 }</code></pre>
-            </div>
-          </div>
-
-          <!-- CSS 选择器 -->
-          <div id="css-selectors" class="chapter-content">
-            <h1 class="text-3xl font-bold text-gray-800 mb-6">CSS 选择器</h1>
-            <div class="prose max-w-none">
-              <p class="text-gray-700 mb-4">CSS 选择器用于"查找"（或选取）要设置样式的 预决算 元素。</p>
-
-              <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">CSS 选择器类型</h2>
-              <table class="min-w-full bg-white border mb-6">
-                <thead>
-                  <tr class="bg-gray-100">
-                    <th class="py-2 px-4 border">选择器</th>
-                    <th class="py-2 px-4 border">示例</th>
-                    <th class="py-2 px-4 border">描述</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td class="py-2 px-4 border">元素选择器</td>
-                    <td class="py-2 px-4 border">p { color: red; }</td>
-                    <td class="py-2 px-4 border">选择所有&lt;p&gt;元素</td>
-                  </tr>
-                  <tr class="bg-gray-50">
-                    <td class="py-2 px-4 border">类选择器</td>
-                    <td class="py-2 px-4 border">.intro { font-weight: bold; }</td>
-                    <td class="py-2 px-4 border">选择class="intro"的元素</td>
-                  </tr>
-                  <tr>
-                    <td class="py-2 px-4 border">ID选择器</td>
-                    <td class="py-2 px-4 border">#header { background: #333; }</td>
-                    <td class="py-2 px-4 border">选择id="header"的元素</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- 章节导航 - 添加ID以便JS操作 -->
-          <div class="flex justify-between mt-8 pt-6 border-t">
-            <a href="#" id="prev-chapter-css" class="text-blue-500 hover:text-blue-700 flex items-center">
-              <i class="fas fa-arrow-left mr-2"></i> 上一章
-            </a>
-            <a href="#" id="next-chapter-css" class="text-blue-500 hover:text-blue-700 flex items-center">
-              下一章 <i class="fas fa-arrow-right ml-2"></i>
-            </a>
           </div>
         </div>
-      </article>
-    </main>
 
-    <!-- 页脚 -->
-    <footer class="bg-gray-800 text-white py-4">
-      <div class="container mx-auto px-4">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div>
-            <h3 class="text-lg font-semibold mb-4">关于我们</h3>
-            <p class="text-gray-400">小熊工作台只是为学习设立的测试网页，提供便捷的内容分享，请自行探索吧！</p>
-          </div>
-          <div>
-            <h3 class="text-lg font-semibold mb-4">快速链接</h3>
-            <ul class="space-y-2">
-              <li>
-                <a href="https://gitee.com/xiongyafei" class="text-gray-400 hover:text-white" target="_blank">Gitee</a>
-              </li>
-            </ul>
-          </div>
+        <!-- CSS 选择器 -->
+        <div id="css-selectors" class="chapter-content">
+          <h1 class="text-3xl font-bold text-gray-800 mb-6">CSS 选择器</h1>
+          <div class="prose max-w-none">
+            <p class="text-gray-700 mb-4">CSS 选择器用于"查找"（或选取）要设置样式的 预决算 元素。</p>
 
-          <div>
-            <h3 class="text-lg font-semibold mb-4">摸鱼链接</h3>
-            <ul class="space-y-2">
-              <li>
-                <a href="https://music.163.com/" class="text-gray-400 hover:text-white" target="_blank">网易音乐</a>
-              </li>
-              <li>
-                <a href="https://www.ximalaya.com/" class="text-gray-400 hover:text-white" target="_blank">喜马拉雅</a>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 class="text-lg font-semibold mb-4">联系我们</h3>
-            <p class="text-gray-400"><i class="fas fa-envelope mr-2"></i> 646318717@qq.com</p>
-            <ul class="space-y-2">
-              <li></li>
-              <li><a href="https://qm.qq.com/q/8NXFKzdlJu" class="text-gray-400 hover:text-white">加入QQ群</a></li>
-            </ul>
+            <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">CSS 选择器类型</h2>
+            <table class="min-w-full bg-white border mb-6">
+              <thead>
+                <tr class="bg-gray-100">
+                  <th class="py-2 px-4 border">选择器</th>
+                  <th class="py-2 px-4 border">示例</th>
+                  <th class="py-2 px-4 border">描述</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="py-2 px-4 border">元素选择器</td>
+                  <td class="py-2 px-4 border">p { color: red; }</td>
+                  <td class="py-2 px-4 border">选择所有&lt;p&gt;元素</td>
+                </tr>
+                <tr class="bg-gray-50">
+                  <td class="py-2 px-4 border">类选择器</td>
+                  <td class="py-2 px-4 border">.intro { font-weight: bold; }</td>
+                  <td class="py-2 px-4 border">选择class="intro"的元素</td>
+                </tr>
+                <tr>
+                  <td class="py-2 px-4 border">ID选择器</td>
+                  <td class="py-2 px-4 border">#header { background: #333; }</td>
+                  <td class="py-2 px-4 border">选择id="header"的元素</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
-        <div class="border-t border-gray-700 mt-1 pt-2 text-center text-gray-400">
-          <p>小熊工作台：祝你收获满满每一天！</p>
+
+        <!-- 章节导航 - 添加ID以便JS操作 -->
+        <div class="flex justify-between mt-8 pt-6 border-t">
+          <a href="#" id="prev-chapter-css" class="text-blue-500 hover:text-blue-700 flex items-center">
+            <i class="fas fa-arrow-left mr-2"></i> 上一章
+          </a>
+          <a href="#" id="next-chapter-css" class="text-blue-500 hover:text-blue-700 flex items-center">
+            下一章 <i class="fas fa-arrow-right ml-2"></i>
+          </a>
         </div>
       </div>
-    </footer>
+    </article>
+  </main>
 
-    <script>
-      // 定义章节顺序
-      const chapterOrder = {
-        gzyjs: ["gzyjs-intro", "gzyjs-basic", "gzyjs-elements"],
-        css: ["css-intro", "css-selectors"],
-      };
+  <!-- 页脚 -->
+  <footer class="bg-gray-800 text-white py-4">
+    <div class="container mx-auto px-4">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div>
+          <h3 class="text-lg font-semibold mb-4">关于我们</h3>
+          <p class="text-gray-400">小熊工作台只是为学习设立的测试网页，提供便捷的内容分享，请自行探索吧！</p>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold mb-4">快速链接</h3>
+          <ul class="space-y-2">
+            <li>
+              <a href="https://gitee.com/xiongyafei" class="text-gray-400 hover:text-white" target="_blank">Gitee</a>
+            </li>
+          </ul>
+        </div>
 
-      // 跟踪当前章节
-      let currentSection = "";
-      let currentChapterIndex = 0;
+        <div>
+          <h3 class="text-lg font-semibold mb-4">摸鱼链接</h3>
+          <ul class="space-y-2">
+            <li>
+              <a href="https://music.163.com/" class="text-gray-400 hover:text-white" target="_blank">网易音乐</a>
+            </li>
+            <li>
+              <a href="https://www.ximalaya.com/" class="text-gray-400 hover:text-white" target="_blank">喜马拉雅</a>
+            </li>
+          </ul>
+        </div>
 
-      // 切换页签
-      function switchTab(tabId, sidebarId) {
-        // 隐藏所有内容
-        document.querySelectorAll(".tab-content").forEach((tab) => {
-          tab.classList.remove("active");
-        });
+        <div>
+          <h3 class="text-lg font-semibold mb-4">联系我们</h3>
+          <p class="text-gray-400"><i class="fas fa-envelope mr-2"></i> 646318717@qq.com</p>
+          <ul class="space-y-2">
+            <li></li>
+            <li><a href="https://qm.qq.com/q/8NXFKzdlJu" class="text-gray-400 hover:text-white">加入QQ群</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-gray-700 mt-1 pt-2 text-center text-gray-400">
+        <p>小熊工作台：祝你收获满满每一天！</p>
+      </div>
+    </div>
+  </footer>
 
-        // 取消所有按钮的激活状态
-        document.querySelectorAll(".tab-button").forEach((button) => {
-          button.classList.remove("active");
-        });
+  <script>
+    // 定义章节顺序
+    const chapterOrder={
+      gzyjs: ["gzyjs-intro", "gzyjs-basic", "gzyjs-elements"],
+      css: ["css-intro", "css-selectors"],
+    };
 
-        // 隐藏所有侧边栏内容
-        document.querySelectorAll(".sidebar-content").forEach((sidebar) => {
-          sidebar.classList.remove("active");
-        });
+    // 跟踪当前章节
+    let currentSection="";
+    let currentChapterIndex=0;
 
-        // 显示选中的内容
-        document.getElementById(tabId).classList.add("active");
+    // 切换页签
+    function switchTab(tabId, sidebarId)
+    {
+      // 隐藏所有内容
+      document.querySelectorAll(".tab-content").forEach((tab) =>
+      {
+        tab.classList.remove("active");
+      });
+
+      // 取消所有按钮的激活状态
+      document.querySelectorAll(".tab-button").forEach((button) =>
+      {
+        button.classList.remove("active");
+      });
+
+      // 隐藏所有侧边栏内容
+      document.querySelectorAll(".sidebar-content").forEach((sidebar) =>
+      {
+        sidebar.classList.remove("active");
+      });
+
+      // 显示选中的内容
+      document.getElementById(tabId).classList.add("active");
+      document.getElementById(sidebarId).classList.add("active");
+
+      // 激活当前按钮
+      event.currentTarget.classList.add("active");
+    }
+
+    // 切换主要内容
+    function switchContent(contentType)
+    {
+      event.preventDefault();
+
+      // 隐藏所有内容
+      document.querySelectorAll(".tab-content").forEach((tab) =>
+      {
+        tab.classList.remove("active");
+      });
+
+      // 隐藏所有侧边栏内容
+      document.querySelectorAll(".sidebar-content").forEach((sidebar) =>
+      {
+        sidebar.classList.remove("active");
+      });
+
+      // 隐藏所有章节内容
+      document.querySelectorAll(".chapter-content").forEach((chapter) =>
+      {
+        chapter.classList.remove("active");
+      });
+
+      // 更新导航链接状态
+      document.querySelectorAll(".nav-link").forEach((link) =>
+      {
+        link.classList.remove("active", "text-blue-500", "font-medium");
+        link.classList.add("text-gray-600");
+      });
+
+      // 更新章节链接状态
+      document.querySelectorAll(".chapter-link").forEach((link) =>
+      {
+        link.classList.remove("active");
+      });
+
+      // 激活当前导航链接
+      event.currentTarget.classList.add("active", "text-blue-500", "font-medium");
+      event.currentTarget.classList.remove("text-gray-600");
+
+      // 显示选中的内容
+      const contentId=`${contentType}-content`;
+      const sidebarId=`${contentType}-sidebar`;
+
+      document.getElementById(contentId).classList.add("active");
+
+      // 如果有对应的侧边栏，则显示
+      if (document.getElementById(sidebarId))
+      {
         document.getElementById(sidebarId).classList.add("active");
 
-        // 激活当前按钮
-        event.currentTarget.classList.add("active");
+        // 设置当前章节
+        currentSection=contentType;
+        currentChapterIndex=0;
       }
 
-      // 切换主要内容
-      function switchContent(contentType) {
-        event.preventDefault();
-
-        // 隐藏所有内容
-        document.querySelectorAll(".tab-content").forEach((tab) => {
-          tab.classList.remove("active");
-        });
-
-        // 隐藏所有侧边栏内容
-        document.querySelectorAll(".sidebar-content").forEach((sidebar) => {
-          sidebar.classList.remove("active");
-        });
-
-        // 隐藏所有章节内容
-        document.querySelectorAll(".chapter-content").forEach((chapter) => {
-          chapter.classList.remove("active");
-        });
-
-        // 更新导航链接状态
-        document.querySelectorAll(".nav-link").forEach((link) => {
-          link.classList.remove("active", "text-blue-500", "font-medium");
-          link.classList.add("text-gray-600");
-        });
-
-        // 更新章节链接状态
-        document.querySelectorAll(".chapter-link").forEach((link) => {
-          link.classList.remove("active");
-        });
-
-        // 激活当前导航链接
-        event.currentTarget.classList.add("active", "text-blue-500", "font-medium");
-        event.currentTarget.classList.remove("text-gray-600");
-
-        // 显示选中的内容
-        const contentId = `${contentType}-content`;
-        const sidebarId = `${contentType}-sidebar`;
-
-        document.getElementById(contentId).classList.add("active");
-
-        // 如果有对应的侧边栏，则显示
-        if (document.getElementById(sidebarId)) {
-          document.getElementById(sidebarId).classList.add("active");
-
-          // 设置当前章节
-          currentSection = contentType;
-          currentChapterIndex = 0;
-        }
-
-        // 默认显示第一个章节
-        const firstChapterLink = document.querySelector(`#${sidebarId} .chapter-link`);
-        if (firstChapterLink) {
-          firstChapterLink.classList.add("active");
-          const chapterId = firstChapterLink.getAttribute("onclick").match(/'([^']+)'/)[1];
-          document.getElementById(chapterId).classList.add("active");
-          document.getElementById(chapterId).classList.add("fade-in");
-
-          // 更新当前章节索引
-          currentChapterIndex = chapterOrder[contentType].indexOf(chapterId);
-        }
-
-        // 为章节导航按钮添加事件
-        setupChapterNavigation();
-      }
-
-      // 切换章节
-      function switchChapter(chapterId) {
-        event.preventDefault();
-
-        // 隐藏所有章节内容
-        document.querySelectorAll(".chapter-content").forEach((chapter) => {
-          chapter.classList.remove("active");
-        });
-
-        // 更新章节链接状态
-        document.querySelectorAll(".chapter-link").forEach((link) => {
-          link.classList.remove("active");
-        });
-
-        // 显示选中的章节
+      // 默认显示第一个章节
+      const firstChapterLink=document.querySelector(`#${sidebarId} .chapter-link`);
+      if (firstChapterLink)
+      {
+        firstChapterLink.classList.add("active");
+        const chapterId=firstChapterLink.getAttribute("onclick").match(/'([^']+)'/)[1];
         document.getElementById(chapterId).classList.add("active");
         document.getElementById(chapterId).classList.add("fade-in");
 
-        // 激活当前章节链接
-        event.currentTarget.classList.add("active");
-
         // 更新当前章节索引
-        if (currentSection) {
-          currentChapterIndex = chapterOrder[currentSection].indexOf(chapterId);
-          setupChapterNavigation();
-        }
+        currentChapterIndex=chapterOrder[contentType].indexOf(chapterId);
       }
 
-      // 设置章节导航功能
-      function setupChapterNavigation() {
-        if (!currentSection) return;
+      // 为章节导航按钮添加事件
+      setupChapterNavigation();
+    }
 
-        const chapters = chapterOrder[currentSection];
-        const prevButton = document.getElementById("prev-chapter");
-        const nextButton = document.getElementById("next-chapter");
+    // 切换章节
+    function switchChapter(chapterId)
+    {
+      event.preventDefault();
 
-        // 重置事件监听器
-        prevButton.onclick = null;
-        nextButton.onclick = null;
+      // 隐藏所有章节内容
+      document.querySelectorAll(".chapter-content").forEach((chapter) =>
+      {
+        chapter.classList.remove("active");
+      });
 
-        // 上一章功能
-        if (currentChapterIndex > 0) {
-          prevButton.onclick = function () {
-            const prevChapterId = chapters[currentChapterIndex - 1];
-            // 找到对应的章节链接并触发点击
-            document.querySelectorAll(".chapter-link").forEach((link) => {
-              if (link.getAttribute("onclick").includes(prevChapterId)) {
-                link.click();
-              }
-            });
-          };
-          prevButton.classList.remove("text-gray-400");
-          prevButton.classList.add("text-blue-500", "hover:text-blue-700");
-        } else {
-          prevButton.classList.remove("text-blue-500", "hover:text-blue-700");
-          prevButton.classList.add("text-gray-400", "cursor-not-allowed");
-        }
+      // 更新章节链接状态
+      document.querySelectorAll(".chapter-link").forEach((link) =>
+      {
+        link.classList.remove("active");
+      });
 
-        // 下一章功能
-        if (currentChapterIndex < chapters.length - 1) {
-          nextButton.onclick = function () {
-            const nextChapterId = chapters[currentChapterIndex + 1];
-            // 找到对应的章节链接并触发点击
-            document.querySelectorAll(".chapter-link").forEach((link) => {
-              if (link.getAttribute("onclick").includes(nextChapterId)) {
-                link.click();
-              }
-            });
-          };
-          nextButton.classList.remove("text-gray-400");
-          nextButton.classList.add("text-blue-500", "hover:text-blue-700");
-        } else {
-          nextButton.classList.remove("text-blue-500", "hover:text-blue-700");
-          nextButton.classList.add("text-gray-400", "cursor-not-allowed");
-        }
+      // 显示选中的章节
+      document.getElementById(chapterId).classList.add("active");
+      document.getElementById(chapterId).classList.add("fade-in");
+
+      // 激活当前章节链接
+      event.currentTarget.classList.add("active");
+
+      // 更新当前章节索引
+      if (currentSection)
+      {
+        currentChapterIndex=chapterOrder[currentSection].indexOf(chapterId);
+        setupChapterNavigation();
+      }
+    }
+
+    // 设置章节导航功能
+    function setupChapterNavigation()
+    {
+      if (!currentSection) return;
+
+      const chapters=chapterOrder[currentSection];
+      const prevButton=document.getElementById("prev-chapter");
+      const nextButton=document.getElementById("next-chapter");
+
+      // 重置事件监听器
+      prevButton.onclick=null;
+      nextButton.onclick=null;
+
+      // 上一章功能
+      if (currentChapterIndex>0)
+      {
+        prevButton.onclick=function()
+        {
+          const prevChapterId=chapters[currentChapterIndex-1];
+          // 找到对应的章节链接并触发点击
+          document.querySelectorAll(".chapter-link").forEach((link) =>
+          {
+            if (link.getAttribute("onclick").includes(prevChapterId))
+            {
+              link.click();
+            }
+          });
+        };
+        prevButton.classList.remove("text-gray-400");
+        prevButton.classList.add("text-blue-500", "hover:text-blue-700");
+      } else
+      {
+        prevButton.classList.remove("text-blue-500", "hover:text-blue-700");
+        prevButton.classList.add("text-gray-400", "cursor-not-allowed");
       }
 
-      // 页面加载时设置首页为默认内容
-      window.onload = function () {
-        // 默认激活首页
-        document.querySelector(".nav-link").click();
+      // 下一章功能
+      if (currentChapterIndex<chapters.length-1)
+      {
+        nextButton.onclick=function()
+        {
+          const nextChapterId=chapters[currentChapterIndex+1];
+          // 找到对应的章节链接并触发点击
+          document.querySelectorAll(".chapter-link").forEach((link) =>
+          {
+            if (link.getAttribute("onclick").includes(nextChapterId))
+            {
+              link.click();
+            }
+          });
+        };
+        nextButton.classList.remove("text-gray-400");
+        nextButton.classList.add("text-blue-500", "hover:text-blue-700");
+      } else
+      {
+        nextButton.classList.remove("text-blue-500", "hover:text-blue-700");
+        nextButton.classList.add("text-gray-400", "cursor-not-allowed");
+      }
+    }
 
-        // 为CSS章节按钮添加处理
-        document.getElementById("prev-chapter-css").onclick = function () {
-          currentSection = "css";
-          document.getElementById("prev-chapter").click();
-        };
-        document.getElementById("next-chapter-css").onclick = function () {
-          currentSection = "css";
-          document.getElementById("next-chapter").click();
-        };
+    // 页面加载时设置首页为默认内容
+    window.onload=function()
+    {
+      // 默认激活首页
+      document.querySelector(".nav-link").click();
+
+      // 为CSS章节按钮添加处理
+      document.getElementById("prev-chapter-css").onclick=function()
+      {
+        currentSection="css";
+        document.getElementById("prev-chapter").click();
       };
-    </script>
-  </body>
+      document.getElementById("next-chapter-css").onclick=function()
+      {
+        currentSection="css";
+        document.getElementById("next-chapter").click();
+      };
+    };
+  </script>
+</body>
+
 </html>
