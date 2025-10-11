@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>小熊工作台</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <link href="https://fastly.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
 
   <!-- 对于支持PNG图标的现代浏览器，可以添加以下行 -->
@@ -109,7 +109,7 @@
         <a href="#" class="nav-link text-blue-500 font-bold font-medium active" onclick="switchContent('home')">首页</a>
         <a href="#" class="nav-link text-gray-600 font-bold hover:text-blue-500"
           onclick="switchContent('gzyjs')">预决算</a>
-        <a href="#" class="nav-link text-gray-600 font-bold hover:text-blue-500" onclick="switchContent('css')">CSS</a>
+        <a href="#" class="nav-link text-gray-600 font-bold hover:text-blue-500" onclick="switchContent('css')">权限调整</a>
       </nav>
       <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md"> </button>
     </div>
@@ -144,22 +144,22 @@
             </li>
             <li>
               <a href="#" class="chapter-link text-gray-600 hover:text-blue-500 block py-1"
-                onclick="switchChapter('gzyjs-elements')">预决算 元素</a>
+                onclick="switchChapter('gzyjs-elements')">预决算 难点</a>
             </li>
           </ul>
         </div>
 
-        <!-- CSS 侧边栏 -->
+        <!-- 权限调整 侧边栏 -->
         <div id="css-sidebar" class="sidebar-content">
-          <h2 class="font-bold text-lg mb-4 text-gray-800 border-b pb-2">CSS 教程</h2>
+          <h2 class="font-bold text-lg mb-4 text-gray-800 border-b pb-2">权限调整 教程</h2>
           <ul class="space-y-2">
             <li>
               <a href="#" class="chapter-link text-gray-600 hover:text-blue-500 block py-1"
-                onclick="switchChapter('css-intro')">CSS 简介</a>
+                onclick="switchChapter('css-intro')">权限调整 简介</a>
             </li>
             <li>
               <a href="#" class="chapter-link text-gray-600 hover:text-blue-500 block py-1"
-                onclick="switchChapter('css-selectors')">CSS 选择器</a>
+                onclick="switchChapter('css-selectors')">权限调整 选择器</a>
             </li>
           </ul>
         </div>
@@ -254,25 +254,29 @@
         <div id="gzyjs-intro" class="chapter-content fade-in">
           <h1 class="text-3xl font-bold text-gray-800 mb-6">预决算 简介</h1>
           <div class="prose max-w-none">
-            <p class="text-gray-700 mb-4">预决算 是用来描述网页的一种语言。</p>
+            <p class="text-gray-700 mb-4">预决算 是依据省国资委、省财政厅的相关要求，由企业聘请事务所进行年审工作，并由企业填报决算报表并报送决算报告的工作。</p>
             <ul class="list-disc pl-6 mb-6 text-gray-700">
-              <li>预决算 指的是超文本标记语言 (Hyper Text Markup Language)</li>
-              <li>预决算 不是一种编程语言，而是一种标记语言 (markup language)</li>
-              <li>标记语言是一套标记标签 (markup tag)</li>
-              <li>预决算 使用标记标签来描述网页</li>
+              <li>每年12月底，国资委一般会召开财务决算工作会议</li>
+              <li>每年1月中旬，集团需要向国资委报送决算备案报告</li>
+              <li>每年2月份，所属企业需要按照用友数据填报一版决算报表</li>
+              <li>每年3月份，集团需要在中旬之前完成年审数据的更新修改，完成预算上报</li>
+              <li>每年4月份，集团需要完成数据汇总、调整等工作，并编制相关情况说明，组织上传资料；完成决算上报</li>
             </ul>
 
-            <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">预决算 实例</h2>
-            <pre class="p-4 bg-gray-100 rounded-md mb-6"><code>&lt;!DOCTYPE gzyjs&gt;
-&lt;html&gt;
-&lt;head&gt;
-    &lt;title&gt;页面标题&lt;/title&gt;
-&lt;/head&gt;
-&lt;body&gt;
-    &lt;h1&gt;我的第一个标题&lt;/h1&gt;
-    &lt;p&gt;我的第一个段落。&lt;/p&gt;
-&lt;/body&gt;
-&lt;/html&gt;</code></pre>
+            <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">预决算 误区</h2>
+            <pre class="p-4 bg-gray-100 rounded-md mb-6"><code>决算报表的填报是需要尽量全审通过，但不是以全审通过为目的，否则大家只填报封面，直接就能全审通过！<br>
+填报方法：
+1.封面：封面是必填项，保持信息的准确性，集团会进行过录性检查，不要提问，自行看说明。
+2.主附表和财务情况表：不能为空，可以是零表；空表和零表的区别在于，空表不参与公式审核。
+（如：没人的人力资源情况表一般都会有人员为0的合理性检查错误，请在错误情况说明中说明原因。）
+3.错误说明：错误说明是必填项，且为10字以上，阐述原因而不是重复错误信息。
+（如：人员合理性错误和利息合理性错误，说明为什么人员为0或利息为0；不要阐述人员为0或无利息）
+4.附注：该项不要求逐项填列，但是报表涉及的一定要填，比如一些流动资产等需要披露的明细。
+（注意：严格按照年审报告的数据披露，存在勾稽错误的，必须调整，审计也不是全对的，及时沟通）
+5.了解单位情况后，需要编制预决算情况说明书，同其他年审资料一起报送。
+（注意：这是预决算相关资料的打包，对应项目对应穿，表格版和pdf版本可以都传，以免频繁对接）
+6.请按照集团审核要求调整数据，有条件会进行预决算培训！
+</code></pre>
 
             <div class="bg-blue-50 border-l-4 border-blue-500 p-4">
               <p class="text-blue-800">
@@ -286,51 +290,48 @@
         <div id="gzyjs-basic" class="chapter-content">
           <h1 class="text-3xl font-bold text-gray-800 mb-6">预决算 基础</h1>
           <div class="prose max-w-none">
-            <p class="text-gray-700 mb-4">预决算 文档由嵌套的HTML元素构成。</p>
+            <p class="text-gray-700 mb-4">预决算 基础内容不想改了，查链接吧：<a href="http://dumogu.github.io/"
+                class="underline text-red-800">http://dumogu.github.io/（网速可能有点差）</a>。</p>
 
-            <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">预决算 文档结构</h2>
-            <pre class="p-4 bg-gray-100 rounded-md mb-6"><code>&lt;!DOCTYPE gzyjs&gt;
-&lt;gzyjs&gt;
-&lt;head&gt;
-    &lt;meta charset="UTF-8"&gt;
-    &lt;title&gt;文档标题&lt;/title&gt;
-&lt;/head&gt;
-&lt;body&gt;
-    &lt;h1&gt;这是一个标题&lt;/h1&gt;
-    &lt;p&gt;这是一个段落。&lt;/p&gt;
-&lt;/body&gt;
-&lt;/gzyjs&gt;</code></pre>
+            <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">预决算 重点事项</h2>
+            <pre class="p-4 bg-gray-100 rounded-md mb-6"><code>此处的重点指附注中的，主附表和财务情况表每张都是重点：
+1.人力资源情况表一定要和所在单位的人事核实，因为存在人员、工资等不可抵消指标；相关报表的填报直接影响薪酬总额核定！
+2.长期股权投资表一定要按照明细填列，主要分三类：合营（共同控制，仅陆港一家）、联营（参股企业）、子公司（控制）。
+3.应收账款及坏账准备计提，根据实际情况一般填个别计提和账龄计提，注意：按组合计提据我所知没有，不要填自己不明白的项目！
+</code></pre>
 
-            <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">预决算 基本概念</h2>
+            <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">预决算 错误概念</h2>
             <ul class="list-disc pl-6 mb-6 text-gray-700">
-              <li><strong>&lt;!DOCTYPE gzyjs&gt;</strong> - 声明文档类型</li>
-              <li><strong>&lt;gzyjs&gt;</strong> - HTML文档的根元素</li>
-              <li><strong>&lt;head&gt;</strong> - 包含文档的元信息</li>
-              <li><strong>&lt;body&gt;</strong> - 包含可见的页面内容</li>
+              <li><strong>逻辑性错误</strong> - 表现为黑色字体，不允许出现的错误！</li>
+              <li><strong>合理性错误</strong> - 表现为灰色字体，必须填报错误说明！</li>
+              <li><strong>封面性错误</strong> - 表现为无法保存或者出现结构错误，如单户选了合并不能撤销，必须重新填报</li>
             </ul>
           </div>
         </div>
 
-        <!-- 预决算 元素 -->
+        <!-- 预决算 难点 -->
         <div id="gzyjs-elements" class="chapter-content">
-          <h1 class="text-3xl font-bold text-gray-800 mb-6">预决算 元素</h1>
+          <h1 class="text-3xl font-bold text-gray-800 mb-6">预决算 难点</h1>
           <div class="prose max-w-none">
-            <p class="text-gray-700 mb-4">预决算 元素指的是从开始标签到结束标签的所有代码。</p>
+            <p class="text-gray-700 mb-4">预决算 难点指的是预决算合并中出现的疑难杂症，多因个表不审核而差额表存在审核公式导致。</p>
 
-            <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">预决算 元素语法</h2>
+            <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">预决算 难点简单阐述</h2>
             <ul class="list-disc pl-6 mb-6 text-gray-700">
-              <li>预决算 元素以开始标签起始</li>
-              <li>预决算 元素以结束标签终止</li>
-              <li>元素的内容是开始标签与结束标签之间的内容</li>
-              <li>某些 预决算 元素具有空内容</li>
-              <li>空元素在开始标签中进行关闭</li>
-              <li>大多数 预决算 元素可拥有属性</li>
+              <li>假设单位存在AB两表，实际有逻辑关系如相等，但是单位不填导致未审核出来。合并填报后差额汇总，AB两表的差额表不一致，导致错误！</li>
+              <li>假设单位存在兼职人员，人员算A公司，费用算B公司，合并后人员费用标准超限。需要人随费用填，尽量保持合理性！</li>
+              <li>假设单位按付息情况填报报表，导致利率情况超标准，相关报表逻辑性报错。请按照权责发生制，必要时可以根据实际情况调整数据！</li>
+              <li>假设单位决算人员不理解合并，可能导致决算信息偏差，差额表无法调平。注意差额表一般只能有负数，基本不可能存在正数，除非子公司对应未填！</li>
             </ul>
 
-            <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">预决算 元素示例</h2>
-            <pre class="p-4 bg-gray-100 rounded-md mb-6"><code>&lt;p&gt;这是一个段落&lt;/p&gt;
-&lt;a href="https://example.com"&gt;这是一个链接&lt;/a&gt;
-&lt;img src="image.jpg" alt="图片描述"&gt;</code></pre>
+            <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">预决算 错误查找</h2>
+            <pre class="p-4 bg-gray-100 rounded-md mb-6"><code>任何一家单位的决算，无论合并还是个别，都应当经过8项综合审核：
+1.具体审核项目不再赘述，今年二级合并板块非常多，二级可能担任原集团的部分合并任务，给大家讲下合并技巧如下。
+2.点开差额表，95%的情况下，差额表为正表示合并表填报，部分子表未填导致未审，差额表出现数据后无法调整。
+3.点开差额表，差额表为负的项目，表示单位合并存在抵消，如果不存在抵消还有负数，表示单位上下级逻辑不清，填报错误！
+4.单位数据全审通过，报送集团后显示错误。100%是因为单位没有数据重算。如浮动表，单位改了合并数据即可审核通过，但是浮动行和合并行可能不一样！
+（注意：报表全部重算、差额汇总后，没有任何数据变动才是稳定状态！每次差额汇总后都需要点击计算才能全审通过的，100%浮动表有误！）
+5.部分单位不理解长投项目分类和明细抵消关系，导致权益表、成本表和长投的关系捋不清，可以根据错误查找，但不要依据纠正，因为该部分审核公式涉及多级汇总后的筛选分类审核，按照正确的去填报列示，符合实际情况自然会对！
+            </code></pre>
           </div>
         </div>
 
@@ -345,69 +346,62 @@
         </div>
       </div>
 
-      <!-- CSS 内容 -->
+      <!-- 权限调整 内容 -->
       <div id="css-content" class="tab-content">
-        <!-- CSS 简介 -->
+        <!-- 权限调整 简介 -->
         <div id="css-intro" class="chapter-content">
-          <h1 class="text-3xl font-bold text-gray-800 mb-6">CSS 简介</h1>
+          <h1 class="text-3xl font-bold text-gray-800 mb-6">权限调整 简介</h1>
           <div class="prose max-w-none">
-            <p class="text-gray-700 mb-4">CSS (层叠样式表) 是一种用来表现HTML或XML等文件样式的计算机语言。</p>
+            <p class="text-gray-700 mb-4">权限调整 是指对集团用友和拜特权限进行的权限调整。</p>
 
-            <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">为什么使用 CSS?</h2>
+            <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">为什么使用 权限调整?</h2>
             <ul class="list-disc pl-6 mb-6 text-gray-700">
-              <li>CSS 节省了大量工作，可以同时控制多个网页的布局</li>
-              <li>外部样式表存储在 CSS 文件中，提高了代码的可维护性</li>
-              <li>样式与内容分离，使HTML更专注于结构</li>
-              <li>提供了丰富的样式控制能力</li>
+              <li>权限增加：有新的成员加入财务团队，申请账号</li>
+              <li>权限减少：人员离职，为信息安全，申请取消其权限</li>
+              <li>权限调整：人员调岗，申请修改权限</li>
+              <li>涉及资金的权限申请如支付审批权，必须先审批完成后添加，涉及紧急权限调整的可先提供正式任命文件！</li>
             </ul>
 
-            <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">CSS 实例</h2>
-            <pre class="p-4 bg-gray-100 rounded-md mb-6"><code>body {
-    background-color: lightblue;
-}
-
-h1 {
-    color: white;
-    text-align: center;
-}
-
-p {
-    font-family: verdana;
-    font-size: 20px;
-}</code></pre>
+            <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">权限调整 实例</h2>
+            <pre class="p-4 bg-gray-100 rounded-md mb-6"><code>权限调整相关解释：
+1.NC57目前仅增加查询权限，任何申请权限调整的新账号都会默认被调整至查询权限。
+2.BIP目前精简权限为三种：财务会计、合并报表、审计查询。
+（个别报表没有权限，能够参与核算即可看到报表；一般申请财务会计权限）
+3.权限调整需要OA走申请单，请提供相关方的名称、手机号。
+</code></pre>
           </div>
         </div>
 
-        <!-- CSS 选择器 -->
+        <!-- 权限调整 选择器 -->
         <div id="css-selectors" class="chapter-content">
-          <h1 class="text-3xl font-bold text-gray-800 mb-6">CSS 选择器</h1>
+          <h1 class="text-3xl font-bold text-gray-800 mb-6">权限调整 选择器</h1>
           <div class="prose max-w-none">
-            <p class="text-gray-700 mb-4">CSS 选择器用于"查找"（或选取）要设置样式的 预决算 元素。</p>
+            <p class="text-gray-700 mb-4">权限调整 选择器用于"查找"（或选取）要设置样式的 预决算 元素。</p>
 
-            <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">CSS 选择器类型</h2>
+            <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">权限调整 选择器类型</h2>
             <table class="min-w-full bg-white border mb-6">
               <thead>
                 <tr class="bg-gray-100">
                   <th class="py-2 px-4 border">选择器</th>
-                  <th class="py-2 px-4 border">示例</th>
+                  <th class="py-2 px-4 border">职责</th>
                   <th class="py-2 px-4 border">描述</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td class="py-2 px-4 border">元素选择器</td>
-                  <td class="py-2 px-4 border">p { color: red; }</td>
-                  <td class="py-2 px-4 border">选择所有&lt;p&gt;元素</td>
+                  <td class="py-2 px-4 border">财务会计</td>
+                  <td class="py-2 px-4 border">出纳、会计、开票</td>
+                  <td class="py-2 px-4 border">最常用的权限</td>
                 </tr>
                 <tr class="bg-gray-50">
-                  <td class="py-2 px-4 border">类选择器</td>
-                  <td class="py-2 px-4 border">.intro { font-weight: bold; }</td>
-                  <td class="py-2 px-4 border">选择class="intro"的元素</td>
+                  <td class="py-2 px-4 border">合并会计</td>
+                  <td class="py-2 px-4 border">需要出具、查询合并报表的人员</td>
+                  <td class="py-2 px-4 border">一般为合并、财务负责人</td>
                 </tr>
                 <tr>
-                  <td class="py-2 px-4 border">ID选择器</td>
-                  <td class="py-2 px-4 border">#header { background: #333; }</td>
-                  <td class="py-2 px-4 border">选择id="header"的元素</td>
+                  <td class="py-2 px-4 border">审计查询</td>
+                  <td class="py-2 px-4 border">权限受限，仅查询功能</td>
+                  <td class="py-2 px-4 border">三方审计、外部检查等临时权限</td>
                 </tr>
               </tbody>
             </table>
