@@ -177,13 +177,13 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <div class="bg-blue-50 p-4 rounded-lg">
               <h2 class="text-xl font-semibold text-blue-800 mb-2">
-                <a href=".\todo.html" class="underline" target="_blank">日程安排</a>
+                <a href=".\待办事项.html" class="underline" target="_blank">日程安排</a>
               </h2>
               <p class="text-gray-700">基于本地化存储的日程安排。</p>
             </div>
             <div class="bg-green-50 p-4 rounded-lg">
               <h2 class="text-xl font-semibold text-green-800 mb-2">
-                <a href=".\merge.html" target="_blank">预算合并</a>
+                <a href=".\合并预算.html" target="_blank">预算合并</a>
               </h2>
               <p class="text-gray-700">中豫港务预算合并线上工具。</p>
             </div>
@@ -191,8 +191,8 @@
           <!-- 热门项目 -->
           <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">热门项目</h2>
           <ul class="list-disc pl-6 mb-6 text-gray-700">
-            <li><a href=".\shudu.html" class="underline" target="_blank">娱乐活动：数独！</a></li>
-            <li><a href=".\game.html" class="underline" target="_blank">娱乐活动：扫雷！</a></li>
+            <li><a href=".\工程数独.html" class="underline" target="_blank">娱乐活动：数独！</a></li>
+            <li><a href=".\工程地雷.html" class="underline" target="_blank">娱乐活动：扫雷！</a></li>
           </ul>
           <!-- 快速链接 -->
           <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">热门链接</h2>
@@ -220,13 +220,6 @@
               <a href="http://123.6.78.204:8088/service/~iufo/com.ufida.web.action.ActionServlet?action=nc.ui.iufo.login.LoginAction"
                 target="_blank">NC57报表</a>
               <p class="text-gray-700">NC57超链接，往期核算。（请使用UC工具登录，安装java6）</p>
-            </div>
-
-            <div class="bg-green-50 p-4 rounded-lg">
-              <h2 class="text-xl font-semibold text-red-800 mb-2">
-                <a href="http://123.6.78.211:9096/zjgl/login/" target="_blank">Bytter登录</a>
-              </h2>
-              <p class="text-gray-700">拜特T6超链接，资金管理</p>
             </div>
 
             <div class="bg-green-50 p-4 rounded-lg">
@@ -267,10 +260,11 @@
             <p class="text-gray-700 mb-4">预决算 是依据省国资委、省财政厅的相关要求，由企业聘请事务所进行年审工作，并由企业填报决算报表并报送决算报告的工作。</p>
             <ul class="list-disc pl-6 mb-6 text-gray-700">
               <li>每年12月底，国资委一般会召开财务决算工作会议</li>
-              <li>每年1月中旬，集团需要向国资委报送决算备案报告</li>
-              <li>每年2月份，所属企业需要按照用友数据填报一版决算报表</li>
-              <li>每年3月份，集团需要在中旬之前完成年审数据的更新修改，完成预算上报</li>
-              <li>每年4月份，集团需要完成数据汇总、调整等工作，并编制相关情况说明，组织上传资料；完成决算上报</li>
+              <li>每年1月中旬，集团需要向国资委报送决算备案报告（集团）</li>
+              <li>每年2月份，所属企业需要按照用友数据填报一版决算报表（各版块自行安排）</li>
+              <li>每年3月份，集团需要在中旬之前完成年审数据的更新修改，完成预算上报（收集决算、上报预算）</li>
+              <li>每年4月份，集团需要完成数据汇总、调整等工作，并编制相关情况说明，组织上传资料；完成决算上报（上报决算）</li>
+              <li>以上是deadline，不是工作时间，具体工作安排依据协同通知！</li>
             </ul>
 
             <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">预决算 误区</h2>
@@ -338,9 +332,11 @@
 1.具体审核项目不再赘述，今年二级合并板块非常多，二级可能担任原集团的部分合并任务，给大家讲下合并技巧如下。
 2.点开差额表，95%的情况下，差额表为正表示合并表填报，部分子表未填导致未审，差额表出现数据后无法调整。
 3.点开差额表，差额表为负的项目，表示单位合并存在抵消，如果不存在抵消还有负数，表示单位上下级逻辑不清，填报错误！
-4.单位数据全审通过，报送集团后显示错误。100%是因为单位没有数据重算。如浮动表，单位改了合并数据即可审核通过，但是浮动行和合并行可能不一样！
+4.单位数据全审通过，报送集团后显示错误。100%是因为单位没有数据重算。
+  如浮动表，单位改了合并数据即可审核通过，但是浮动行和合并行可能不一样！
 （注意：报表全部重算、差额汇总后，没有任何数据变动才是稳定状态！每次差额汇总后都需要点击计算才能全审通过的，100%浮动表有误！）
-5.部分单位不理解长投项目分类和明细抵消关系，导致权益表、成本表和长投的关系捋不清，可以根据错误查找，但不要依据纠正，因为该部分审核公式涉及多级汇总后的筛选分类审核，按照正确的去填报列示，符合实际情况自然会对！
+5.部分单位不理解长投项目分类和明细抵消关系，导致权益表、成本表和长投的关系捋不清，可以根据错误查找，但不要依据纠正，
+  因为该部分审核公式涉及多级汇总后的筛选分类审核，按照正确的去填报列示，符合实际情况自然会对！
             </code></pre>
           </div>
         </div>

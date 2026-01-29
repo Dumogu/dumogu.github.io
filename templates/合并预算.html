@@ -6,7 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>中豫港务预算合并工具</title>
     <!-- 使用ExcelJS库，替代方案 -->
-    <script src="https://fastly.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+    <script src="../static/script/exceljs.js"></script>
+    <!-- <script src="https://fastly.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script> -->
+
     <!-- 在其他script标签之后添加 -->
     <script src="../static/script/utils.js"></script>
 
@@ -344,7 +346,7 @@
     <div class="container">
         <header>
             <h1>中豫港务集团预算合并工具</h1>
-            <p class="description">基于ExcelJS库实现多工作簿数据合并功能，不支持谷歌浏览器！</p>
+            <p class="description">基于ExcelJS库实现多工作簿数据合并功能，不支持谷歌浏览器！仅支持模板版本：20250526！</p>
         </header>
 
         <div class="upload-section">
@@ -364,13 +366,14 @@
         <div class="instructions">
             <h3>使用说明</h3>
             <ul>
+                <li>仅支持版本20250526，其他版本已不再支持！</li>
                 <li>点击上方按钮选择多个Excel文件（.xlsx），单选一个没有作用且功能不完备！</li>
                 <li>系统将自动验证每个文件的合规性</li>
                 <li>验证通过后，点击"合并文件"按钮执行合并操作</li>
                 <li>验证不通过时，仍然可以强制合并文件</li>
                 <li>合并规则：同名工作表的数据区域简单相加，其他区域保持原格式</li>
                 <li>合并完成后，合并后的文件将自动下载到本地</li>
-                <li>注意：请使用发布的python版线下合并工具（可视检查）或golang版线下合并工具（极速粗暴）进行数据合并报送！</li>
+
                 <li>
                     注意：此工具在浏览器中运行，您的文件不会上传到服务器，经过网页版处理的弊端是合并单元格格式被破坏（如提示标记）！
                 </li>
@@ -487,20 +490,56 @@
                     validationPassed=true;
 
                     // 加载所有工作簿
+                    // for (const file of files)
+                    // {
+                    //     console.log("正在加载文件："+file.name);
+                    //     const arrayBuffer=await readFileAsArrayBuffer(file);
+                    //     const workbook=new ExcelJS.Workbook();
+                    //     // 加载工作簿
+                    //     await workbook.xlsx.load(arrayBuffer);
+                    //     let book={
+                    //         filename: file.name,
+                    //         workbook: workbook,
+                    //     };
+                    //     workbooks.push(book);
+                    //     console.log("文件加载完毕："+file.name);
+                    // }
+
+                    // 加载所有工作簿
                     for (const file of files)
                     {
-                        print("正在加载文件："+file.name);
-                        const arrayBuffer=await readFileAsArrayBuffer(file);
-                        const workbook=new ExcelJS.Workbook();
-                        await workbook.xlsx.load(arrayBuffer);
-                        let book={
-                            filename: file.name,
-                            workbook: workbook,
-                        };
-                        workbooks.push(book);
+                        console.log("正在加载文件："+file.name);
+                        try
+                        {
+                            const arrayBuffer=await readFileAsArrayBuffer(file);
+                            const workbook=new ExcelJS.Workbook();
+
+                            // 添加错误处理到workbook解析过程
+                            workbook.definedNames=workbook.definedNames||{};
+                            workbook.dataValidations=workbook.dataValidations||{};
+
+                            // 加载工作簿，添加配置选项跳过复杂验证
+                            await workbook.xlsx.load(arrayBuffer, {
+                                ignoreNodes: ['dataValidations'], // 忽略数据验证节点
+                                maxModelSize: 0 // 不限制模型大小
+                            });
+
+                            let book={
+                                filename: file.name,
+                                workbook: workbook,
+                            };
+                            workbooks.push(book);
+                            console.log("文件加载完毕："+file.name);
+                        } catch (error)
+                        {
+                            console.error(`处理文件 ${file.name} 时出错:`, error);
+                            // 可以选择跳过有问题的文件或使用备用方案
+                            console.warn(`跳过文件 ${file.name}，继续处理其他文件`);
+                            continue;
+                        }
                     }
 
-                    // print(workbooks);
+                    // console.log(workbooks);
 
                     // 验证每个工作簿
                     for (let i=0; i<workbooks.length; i++)
@@ -526,7 +565,7 @@
 
                             let cellValue=sheet.getCell(cell);
                             let actualValue=cellValue.value; // 将获取到的值存起来，避免重复访问属性
-                            // print(typeof actualValue === "object", actualValue, cellValue.result);
+                            // console.log(typeof actualValue === "object", actualValue, cellValue.result);
                             if (typeof actualValue==="object")
                             {
                                 actualValue=cellValue.result; //如果是对象，则取其result属性作为实际值
@@ -716,13 +755,14 @@
                                 "利润表预算",
                                 "现金流量预算",
                                 "资产负债表预算",
-                                "固定资产购置预算",
+                                // "固定资产购置预算",
+                                "三公经费预算",
                                 "报表审核",
                                 "填报注意事项",
                             ].includes(sheetName)
                         )
                         {
-                            print("---------------------------------------", sheetName);
+                            console.log("---------------------------------------", sheetName);
                             continue;
                         }
                         const newSheet=mergedWorkbook.addWorksheet(sheetName);
@@ -769,22 +809,22 @@
                                 maxROW=49;
                                 maxCOL=13;
                                 break;
-                            case "固定资产购置预算":
-                                maxROW=15;
-                                maxCOL=8;
-                                break;
+                            // case "固定资产购置预算":
+                            //     maxROW=15;
+                            //     maxCOL=8;
+                            //     break;
                             default:
                                 minROW=4;
                                 minCOL=2;
                                 maxROW=13;
                                 maxCOL=9;
                         }
-                        print("minRow->", minROW, "minCol->", minCOL, "maxRow->", maxROW, "maxCol->", maxCOL);
+                        console.log("minRow->", minROW, "minCol->", minCOL, "maxRow->", maxROW, "maxCol->", maxCOL);
                         // 复制格式和样式
                         newSheet.model=JSON.parse(JSON.stringify(firstSheet.model));
-                        print("maxRealRow->", firstSheet.rowCount, "maxRealCol->", firstSheet.columnCount);
+                        console.log("maxRealRow->", firstSheet.rowCount, "maxRealCol->", firstSheet.columnCount);
 
-                        print(newSheet.name)
+                        console.log(newSheet.name)
 
                         if (sheetName.toString()=="期间费用预算")
                         {
@@ -824,16 +864,16 @@
                             newSheet.getRow(2).height=28;
                             newSheet.getRow(3).height=28;
                         }
-                        else if (sheetName.toString()=="固定资产购置预算")
-                        {
-                            newSheet.mergeCells("A1:F1"); newSheet.mergeCells("A2:B2"); newSheet.mergeCells("C3:E3");
-                            newSheet.mergeCells("A3:A4"); newSheet.mergeCells("F3:F4");
-                            newSheet.getRow(1).height=28;
-                            newSheet.getRow(2).height=28;
-                            newSheet.getRow(3).height=28;
-                            newSheet.getRow(4).height=28;
-                        }
-                        // try { newSheet.mergeCells("A1:K1"); print("合并成功！") } catch (e) { print("重复合并单元格失败！") }
+                        // else if (sheetName.toString()=="固定资产购置预算")
+                        // {
+                        //     newSheet.mergeCells("A1:F1"); newSheet.mergeCells("A2:B2"); newSheet.mergeCells("C3:E3");
+                        //     newSheet.mergeCells("A3:A4"); newSheet.mergeCells("F3:F4");
+                        //     newSheet.getRow(1).height=28;
+                        //     newSheet.getRow(2).height=28;
+                        //     newSheet.getRow(3).height=28;
+                        //     newSheet.getRow(4).height=28;
+                        // }
+                        // try { newSheet.mergeCells("A1:K1"); console.log("合并成功！") } catch (e) { console.log("重复合并单元格失败！") }
 
                         // 合并数据区域
                         for (let row=minROW; row<=maxROW; row++)
@@ -854,16 +894,16 @@
 
                                         if (typeof sourceCell.value==="number")
                                         {
-                                            // print(sheetName, row, col, "结果->", sourceCell.value);
+                                            // console.log(sheetName, row, col, "结果->", sourceCell.value);
                                             sum+=sourceCell.value;
                                             hasValue=true;
                                         } else if (typeof sourceCell.value==="string")
                                         {
-                                            // print("字符");
+                                            // console.log("字符");
                                             continue;
                                         } else if (sourceCell.value===null)
                                         {
-                                            // print("空值");
+                                            // console.log("空值");
                                             continue;
                                         } else if (
                                             sourceCell.value.result!=undefined&&
@@ -872,16 +912,16 @@
                                         {
                                             sum+=sourceCell.value.result;
                                             // hasValue = true;公式有值，不能作为判断是否有值的标准，因为可能有公式结果为0的情况
-                                            // print(sheetName, row, col, "====数字：", sourceCell.value.result);
+                                            // console.log(sheetName, row, col, "====数字：", sourceCell.value.result);
                                             continue;
                                         } else
                                         {
-                                            // print(sheetName, row, col, "非数字：", sourceCell.value.result);
+                                            // console.log(sheetName, row, col, "非数字：", sourceCell.value.result);
                                             hasValue=false;
                                         }
                                     }
                                 }
-                                // print(sheetName, row, col, "SUM:", sum, hasValue);
+                                // console.log(sheetName, row, col, "SUM:", sum, hasValue);
                                 // 如果所有工作簿中此单元格都是数字，则设置求和结果
                                 if (hasValue)
                                 {

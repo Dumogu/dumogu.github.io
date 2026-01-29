@@ -39,12 +39,3 @@ function getColumnLetter(columnNumber)
     return letter;
 }
 
-/**
-* 打印输出传入的参数
-*
-* @param {...any} args - 要打印输出的参数
-*/
-function print(...args)
-{
-    console.log(...args);
-}
